@@ -1,0 +1,63 @@
+---
+title: "model"
+output: html_document
+date: "2024-07-03"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load packages
+
+```{r load packages}
+library(dplyr)   
+library(readr)  
+library(ggplot2)
+library(statsr)
+library(gridExtra)
+library(corrplot)
+```
+
+## Moviesets
+
+```{r moviesets}
+
+movieset1 <- read.csv("~/Downloads/box office 2.csv")
+movieset2 <- read.csv("~/Downloads/imdb 2.csv")
+movieset3 <- read.csv("~/Downloads/metadata.csv")
+
+# Find duplicate movie titles in each dataset
+duplicates_in_movieset1 <- movieset1 %>% filter(duplicated(movie_title) | duplicated(movie_title, fromLast = TRUE))
+duplicates_in_movieset2 <- movieset2 %>% filter(duplicated(movie_title) | duplicated(movie_title, fromLast = TRUE))
+duplicates_in_movieset3 <- movieset3 %>% filter(duplicated(movie_title) | duplicated(movie_title, fromLast = TRUE))
+
+# print(duplicates_in_movieset1)
+# print(duplicates_in_movieset2)
+# print(duplicates_in_movieset3)
+
+# Remove duplicate rows based on movie_title
+movieset1 <- movieset1 %>% distinct(movie_title, .keep_all = TRUE)
+movieset2 <- movieset2 %>% distinct(movie_title, .keep_all = TRUE)
+movieset3 <- movieset3 %>% distinct(movie_title, .keep_all = TRUE)
+
+merged_df <- movieset1 %>%
+  full_join(movieset2, by = "movie_title") %>%
+  full_join(movieset3, by = "movie_title")
+
+# print(merged_df)
+
+# Select columns to keep
+cleaned_df <- merged_df %>% select(movie_title, gross, content_rating, genres, plot_keywords, director_name, actor_1_name, actor_2_name, actor_3_name, language, country, budget, title_year)
+
+# Print the cleaned data frame
+# print(cleaned_df)
+
+# Filter out rows with NA in any column
+filtered_df <- cleaned_df %>% filter(complete.cases(.))
+
+# Print the filtered data frame
+print(filtered_df)
+
+```
+
