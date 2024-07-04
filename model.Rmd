@@ -23,9 +23,9 @@ library(corrplot)
 
 ```{r moviesets}
 
-movieset1 <- read.csv("~/Documents/Github/MSCI-436-Team-9/box office 2.csv")
-movieset2 <- read.csv("~/Documents/Github/MSCI-436-Team-9/imdb 2.csv")
-movieset3 <- read.csv("~/Documents/Github/MSCI-436-Team-9/metadata.csv")
+movieset1 <- read.csv("box office 2.csv")
+movieset2 <- read.csv("imdb 2.csv")
+movieset3 <- read.csv("metadata.csv")
 
 ```
 
