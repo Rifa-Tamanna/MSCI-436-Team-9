@@ -23,10 +23,13 @@ library(corrplot)
 
 ```{r moviesets}
 
-movieset1 <- read.csv("~/Downloads/box office 2.csv")
-movieset2 <- read.csv("~/Downloads/imdb 2.csv")
-movieset3 <- read.csv("~/Downloads/metadata.csv")
+movieset1 <- read.csv("~/Documents/Github/MSCI-436-Team-9/box office 2.csv")
+movieset2 <- read.csv("~/Documents/Github/MSCI-436-Team-9/imdb 2.csv")
+movieset3 <- read.csv("~/Documents/Github/MSCI-436-Team-9/metadata.csv")
 
+```
+
+```{r clean dataframe}
 # Find duplicate movie titles in each dataset
 duplicates_in_movieset1 <- movieset1 %>% filter(duplicated(movie_title) | duplicated(movie_title, fromLast = TRUE))
 duplicates_in_movieset2 <- movieset2 %>% filter(duplicated(movie_title) | duplicated(movie_title, fromLast = TRUE))
@@ -58,6 +61,10 @@ filtered_df <- cleaned_df %>% filter(complete.cases(.))
 
 # Print the filtered data frame
 print(filtered_df)
+
+```
+```{r  dataframe}
+
 
 ```
 
