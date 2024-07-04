@@ -17,6 +17,7 @@ library(ggplot2)
 library(statsr)
 library(gridExtra)
 library(corrplot)
+library(tidyr)
 ```
 
 ## Moviesets
@@ -59,8 +60,30 @@ cleaned_df <- merged_df %>% select(movie_title, gross, content_rating, genres, p
 # Filter out rows with NA in any column
 filtered_df <- cleaned_df %>% filter(complete.cases(.))
 
+cleaned_genres_df <- filtered_df %>%
+  separate(genres, into = paste0("genre_", 1:5), sep = "\\|", fill = "right")
+
+# Print the resulting dataset
+print(cleaned_genres_df)
+
+# Number of bins
+num_bins <- 4
+
+bin_labels <- c("Low", "Medium", "High", "Very High")
+
+# Cut the data into equal width bins with labels
+# cleaned_genres_df$gross_equal_width_bins <- cut(cleaned_genres_df$gross, breaks = num_bins, labels = bin_labels)
+
+# Print the result
+# print(cleaned_genres_df)
+
+# genre_list <- strsplit(filtered_df$genres, "\\|")[[1]]
+# print(genre_list)
+# 
+# genre_dummy <- as.data.frame(table(genre_factors))
+
 # Print the filtered data frame
-print(filtered_df)
+# print(filtered_df)
 
 ```
 ```{r  numerical variables}
@@ -86,3 +109,67 @@ correlation_matrix <- cor(numeric_vars)
 print(correlation_matrix)
 ```
 
+```{r}
+# Convert to numeric if it's not already
+# cleaned_genres_df$gross_equal_width_bins <- as.numeric(cleaned_genres_df$gross_equal_width_bins)
+# 
+# hist(cleaned_genres_df$gross_equal_width_bins),
+#      main = "Frequency of Gross Revenue Bins",
+#      xlab = "Bins",
+#      ylab = "Frequency")
+
+custom_breaks <- c(0, 1500000, 30000000, 60000000, 9000000, Inf)
+bin_labels <- c("Very Low", "Low", "Medium", "High", "Very High")
+
+cleaned_genres_df$gross_equal_width_bins <- cut(cleaned_genres_df$gross, breaks = custom_breaks, labels = bin_labels, include.lowest = TRUE, right = FALSE)
+
+bin_freq <- table(cleaned_genres_df$gross_equal_width_bins)
+
+barplot(bin_freq, 
+     main = "Frequency of Gross Revenue Bins",
+     xlab = "Bins",
+     ylab = "Frequency")
+```
+
+```{r correlation for categorical}
+
+# boxplot(gross ~ genres, data = filtered_df, main = 'Gross Review vs. Genre', xlab = 'Genre', ylab = 'Gross Revenue')
+# p1 <- ggplot(aes(x=genre_1), data=cleaned_genres_df) + geom_bar(aes(y=100*(..count..)/sum(..count..))) + ylab('percentage') +
+#   ggtitle('Genres') + coord_flip()
+# grid.arrange(p1, ncol = 2)
+# 
+
+# Step 1: Reshape the dataset
+cleaned_genres_df <- cleaned_genres_df %>%
+  mutate(genres = paste(genre_1, genre_2, genre_3, sep = "|")) %>%
+  separate_rows(genres, sep = "\\|") %>%
+  filter(!is.na(genres))  # Remove NA values if any
+
+# Step 2: Create a bar plot for genres
+p1 <- ggplot(aes(x = genres), data = cleaned_genres_df) +
+  geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
+  ylab('Percentage') +
+  ggtitle('Genres') +
+  coord_flip()
+
+# Step 3: Arrange the plot
+grid.arrange(p1, ncol = 2)
+
+# Create boxplot
+boxplot(cleaned_genres_df$gross_equal_width_bins ~ genres, data = cleaned_genres_df,
+        main = 'Gross Revenue vs. Genre', 
+        xlab = 'Genre', 
+        ylab = 'Gross Revenue',
+        las = 2,   # Rotate x-axis labels to be vertical
+        cex.axis = 0.8, # Reduce the font size of axis labels
+        par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
+
+# # Summarize by director_name
+# summary_by_director <- aggregate(gross ~ director_name, data = filtered_df, FUN = summary)
+# print(summary_by_director)
+
+# boxplot(gross ~ director_name, data = cleaned_genres_df,
+#         main = 'Gross Revenue vs. Genre', xlab = 'Director', ylab = 'Director Name')
+
+
+```
