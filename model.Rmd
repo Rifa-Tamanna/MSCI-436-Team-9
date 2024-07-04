@@ -63,8 +63,26 @@ filtered_df <- cleaned_df %>% filter(complete.cases(.))
 print(filtered_df)
 
 ```
-```{r  dataframe}
+```{r  numerical variables}
+summary(filtered_df)
 
+hist(filtered_df$gross, breaks = 30)
+summary(filtered_df$gross)
 
+p1 <- ggplot(aes(x=log10(filtered_df$budget)), data=filtered_df) + 
+  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('Budget')
+p2 <- ggplot(aes(x=title_year), data=filtered_df) +
+  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('Title Year')
+grid.arrange(p1, p2, ncol=2)
+```
+```{r correlation for numerical}
+# features <- names(filtered_df) %in% c('budget', 'title_year')
+numeric_columns <- names(filtered_df)[sapply(filtered_df, is.numeric)]
+numeric_columns <- setdiff(numeric_columns, "gross")
+numeric_vars <- filtered_df[, numeric_columns]
+print(names(numeric_vars))
+
+correlation_matrix <- cor(numeric_vars)
+print(correlation_matrix)
 ```
 
