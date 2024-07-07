@@ -175,12 +175,25 @@ grid.arrange(p7, ncol = 2)
 
 
 ```
+## Define columns that will be used in the model
+```{r}
+str(movieset)
+movieset_clean <- na.omit(movieset)
+
+final_movieset <- movieset_clean %>% select(name, rating, genre, year, score, votes, country, budget, gross, runtime)
+print(final_movieset)
+```
+
 ## Splitting dataset into train and test
 ```{r}
 set.seed(2017)
-split <- sample(seq_len(nrow(movieset)), size = floor(0.7 * nrow(movieset)))
-train <- movieset[split, ]
-test <- movieset[-split, ]
+split <- sample(seq_len(nrow(final_movieset)), size = floor(0.7 * nrow(final_movieset)))
+train <- final_movieset[split, ]
+test <- final_movieset[-split, ]
 dim(train)
 dim(test)
+```
+
+## Training the model
+```{r}
 ```
