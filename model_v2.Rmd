@@ -183,7 +183,7 @@ grid.arrange(p7, ncol = 2)
 str(movieset)
 movieset_clean <- na.omit(movieset)
 
-final_movieset <- movieset_clean %>% select(name, rating, genre, year, score, votes, country, budget, gross, runtime)
+final_movieset <- movieset_clean %>% select(rating, genre, year, score, votes, budget, gross, runtime)
 print(final_movieset)
 ```
 
@@ -201,6 +201,66 @@ dim(test)
 
 ## Determining the order of predictors 
 ```{r}
-full_model <- lm(gross~rating+genre+year+score+votes+country+budget+runtime, data=train)
+full_model <- lm(gross~rating+genre+year+score+votes+budget+runtime, data=train)
 summary(full_model)
+```
+## Creating a model 
+```{r}
+fit1 <- lm(gross ~ votes, data=train)
+summary(fit1)
+```
+
+```{r}
+fit_model <- lm(gross~rating+genre+year+score+budget+runtime, data=train)
+print(fit_model)
+```
+
+```{r}
+fit2 <- lm(gross ~ votes + budget, data=train)
+summary(fit2)
+```
+
+```{r}
+fit_model_2 <- lm(gross~rating+genre+year+score+runtime, data=train)
+print(fit_model_2)
+```
+
+```{r}
+fit3 <- lm(gross ~ votes + budget + genre, data=train)
+summary(fit3)
+```
+
+```{r}
+fit_model_3 <- lm(gross~rating+year+score+runtime, data=train)
+print(fit_model_3)
+```
+
+```{r}
+fit4 <- lm(gross ~ votes + budget + genre + rating, data=train)
+summary(fit4)
+```
+
+```{r}
+fit5 <- lm(gross ~ votes + budget + genre + rating + score, data=train)
+summary(fit5)
+```
+
+```{r}
+fit6 <- lm(gross ~ votes + budget + genre + rating + score + runtime, data=train)
+summary(fit5)
+```
+
+## Predicting the Model
+```{r}
+new_movie <- test %>% select(votes, budget, genre, rating, score, runtime)
+
+new_movie$rating <- factor(new_movie$rating, levels = levels(train$rating))
+# new_movie$genre <- factor(new_movie$genre, levels = levels(train$genre))
+
+# Make predictions
+predict(fit6, new_movie)
+```
+
+```{r}
+
 ```
