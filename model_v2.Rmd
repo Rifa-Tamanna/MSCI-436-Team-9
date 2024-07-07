@@ -14,22 +14,34 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)   
 library(readr)  
 library(ggplot2)
-# library(statsr)
+#library(statsr)
 library(gridExtra)
 library(corrplot)
 library(tidyr)
 ```
 
 ## Dataset 
-```{r}
+```{r dataset}
 movieset <- read.csv("output.csv")
+print(movieset)
 ```
-## Including Plots
+```{r numerical correlation}
 
-You can also embed plots, for example:
+p1 <- ggplot(aes(x=year), data=movieset) + 
+  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('year')
+p2 <- ggplot(aes(x=score), data=movieset) +
+  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('score')
+p3 <- ggplot(aes(x=votes), data=movieset) +
+  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('votes')
+p4 <- ggplot(aes(x=budget), data=movieset) +
+  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('budget')
+p5 <- ggplot(aes(x=runtime), data=movieset) +
+  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('runtime')
+grid.arrange(p1, p2, p3, p4, p5, ncol=2)
 
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r categorical correlation}
+
+```
+
