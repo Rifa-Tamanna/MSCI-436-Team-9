@@ -55,3 +55,47 @@ correlation_matrix <- cor(numeric_vars)
 print(correlation_matrix)
 ```
 
+## Binning
+
+```{r}
+custom_breaks <- c(0, 10000000, 30000000, 90000000, 150000000, Inf)
+bin_labels <- c("Very Low", "Low", "Medium", "High", "Very High")
+
+movieset$gross_equal_width_bins <- cut(movieset$gross, breaks = custom_breaks, labels = bin_labels, include.lowest = TRUE, right = FALSE)
+
+bin_freq <- table(movieset$gross_equal_width_bins)
+
+barplot(bin_freq, 
+     main = "Frequency of Gross Revenue Bins",
+     xlab = "Bins",
+     ylab = "Frequency")
+
+
+```
+
+
+
+## Including Plots
+
+```{r}
+
+#Plotting genre to gross frequency
+p1 <- ggplot(aes(x = genre), data = movieset) +
+  geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
+  ylab('Percentage') +
+  ggtitle('Genres') +
+  coord_flip()
+
+
+grid.arrange(p1, ncol = 2)
+
+# Create boxplot
+boxplot(movieset$gross_equal_width_bins ~ genre, data = movieset,
+        main = 'Gross Revenue vs. Genre', 
+        xlab = 'Genre', 
+        ylab = 'Gross Revenue',
+        las = 2,   # Rotate x-axis labels to be vertical
+        cex.axis = 0.8, # Reduce the font size of axis labels
+        par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
+
+```
