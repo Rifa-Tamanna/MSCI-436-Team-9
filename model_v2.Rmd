@@ -25,6 +25,7 @@ library(tidyr)
 movieset <- read.csv("output.csv")
 print(movieset)
 ```
+
 ```{r numerical correlation}
 
 p1 <- ggplot(aes(x=year), data=movieset) + 
@@ -41,7 +42,16 @@ grid.arrange(p1, p2, p3, p4, p5, ncol=2)
 
 ```
 
-```{r categorical correlation}
+```{r correlation matrix}
+hist(movieset$gross, breaks = 30)
+summary(movieset$gross)
 
+numeric_columns <- names(movieset)[sapply(movieset, is.numeric)]
+numeric_columns <- setdiff(numeric_columns, "gross")
+numeric_vars <- movieset[, numeric_columns]
+print(names(numeric_vars))
+
+correlation_matrix <- cor(numeric_vars)
+print(correlation_matrix)
 ```
 
