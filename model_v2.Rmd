@@ -260,7 +260,10 @@ new_movie$rating <- factor(new_movie$rating, levels = levels(train$rating))
 # Make predictions
 predict(fit6, new_movie)
 ```
+```{r}
+predict(fit6, new_movie, interval = "prediction", level = 0.05)
+```
 
 ```{r}
-
+test$gross
 ```
