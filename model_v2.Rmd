@@ -136,6 +136,44 @@ boxplot(movieset$gross_equal_width_bins ~ country, data = movieset,
         cex.axis = 0.8, # Reduce the font size of axis labels
         par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
 
+
+#Plotting company to gross frequency
+p4 <- ggplot(aes(x = company), data = movieset) +
+  geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
+  ylab('Percentage') +
+  ggtitle('Company') +
+  coord_flip()
+
+grid.arrange(p4, ncol = 2)
+
+#Plotting director to gross frequency
+p5 <- ggplot(aes(x = director), data = movieset) +
+  geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
+  ylab('Percentage') +
+  ggtitle('Director') +
+  coord_flip()
+
+grid.arrange(p5, ncol = 2)
+
+#Plotting writer to gross frequency
+p6 <- ggplot(aes(x = writer), data = movieset) +
+  geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
+  ylab('Percentage') +
+  ggtitle('Writer') +
+  coord_flip()
+
+grid.arrange(p6, ncol = 2)
+
+#Plotting star to gross frequency
+p7 <- ggplot(aes(x = star), data = movieset) +
+  geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
+  ylab('Percentage') +
+  ggtitle('Star') +
+  coord_flip()
+
+grid.arrange(p7, ncol = 2)
+
+
 ```
 ## Splitting dataset into train and test
 ```{r}
