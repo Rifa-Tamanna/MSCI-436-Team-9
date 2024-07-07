@@ -137,3 +137,12 @@ boxplot(movieset$gross_equal_width_bins ~ country, data = movieset,
         par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
 
 ```
+## Splitting dataset into train and test
+```{r}
+set.seed(2017)
+split <- sample(seq_len(nrow(movieset)), size = floor(0.7 * nrow(movieset)))
+train <- movieset[split, ]
+test <- movieset[-split, ]
+dim(train)
+dim(test)
+```
