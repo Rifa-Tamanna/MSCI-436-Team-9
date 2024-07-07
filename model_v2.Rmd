@@ -26,34 +26,6 @@ movieset <- read.csv("output.csv")
 print(movieset)
 ```
 
-```{r numerical plots}
-
-p1 <- ggplot(aes(x=year), data=movieset) + 
-  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('year')
-p2 <- ggplot(aes(x=score), data=movieset) +
-  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('score')
-p3 <- ggplot(aes(x=votes), data=movieset) +
-  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('votes')
-p4 <- ggplot(aes(x=budget), data=movieset) +
-  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('budget')
-p5 <- ggplot(aes(x=runtime), data=movieset) +
-  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('runtime')
-grid.arrange(p1, p2, p3, p4, p5, ncol=2)
-
-```
-
-```{r numerical correlation matrix}
-hist(movieset$gross, breaks = 30)
-summary(movieset$gross)
-
-numeric_columns <- names(movieset)[sapply(movieset, is.numeric)]
-numeric_columns <- setdiff(numeric_columns, "gross")
-numeric_vars <- movieset[, numeric_columns]
-print(names(numeric_vars))
-
-correlation_matrix <- cor(numeric_vars)
-print(correlation_matrix)
-```
 
 ## Binning
 
@@ -72,8 +44,38 @@ barplot(bin_freq,
 
 ```
 
+# Numerical and Categorical Variables
 
-## Including Plots
+```{r numerical plots}
+
+p1 <- ggplot(aes(x=year), data=movieset) + 
+  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('year')
+p2 <- ggplot(aes(x=score), data=movieset) +
+  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('score')
+p3 <- ggplot(aes(x=log10(votes)), data=movieset) +
+  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('votes')
+p4 <- ggplot(aes(x=log10(budget)), data=movieset) +
+  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('budget')
+p5 <- ggplot(aes(x=runtime), data=movieset) +
+  geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('runtime')
+grid.arrange(p1, p2, p3, p4, p5, ncol=2)
+
+```
+For the analysis, we will be using year, score, log(votes), log(budget) and runtime. They all have reasonably broad distributions which make them appropriate candidtates.
+
+```{r numerical correlation matrix}
+hist(movieset$gross, breaks = 30)
+summary(movieset$gross)
+
+numeric_columns <- names(movieset)[sapply(movieset, is.numeric)]
+numeric_columns <- setdiff(numeric_columns, "gross")
+numeric_vars <- movieset[, numeric_columns]
+print(names(numeric_vars))
+
+correlation_matrix <- cor(numeric_vars)
+print(correlation_matrix)
+```
+As the correlation between all of the numerical variables are relatively low, they can all be used for the prediction analysis. 
 
 ```{r categorical plots}
 
@@ -175,3 +177,4 @@ grid.arrange(p7, ncol = 2)
 
 
 ```
+We will be using genre, rating, and country as prediction variables because gross revenue has a correlation with those three. Due to the high number of unique entries of company, director, writer, and star, we have decided to exclude these variables from our predictive model.
