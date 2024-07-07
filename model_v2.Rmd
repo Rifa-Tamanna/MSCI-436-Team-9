@@ -61,7 +61,7 @@ p5 <- ggplot(aes(x=runtime), data=movieset) +
 grid.arrange(p1, p2, p3, p4, p5, ncol=2)
 
 ```
-For the analysis, we will be using year, score, log(votes), log(budget) and runtime. They all have reasonably broad distributions which make them appropriate candidtates.
+For the analysis, we will be using year, score, log(votes), log(budget) and runtime. They all have reasonably broad distributions which make them appropriate candid ates.
 
 ```{r numerical correlation matrix}
 hist(movieset$gross, breaks = 30)
@@ -177,7 +177,7 @@ grid.arrange(p7, ncol = 2)
 
 
 ```
-<<<<<<< HEAD
+
 ## Define columns that will be used in the model
 ```{r}
 str(movieset)
@@ -187,11 +187,8 @@ final_movieset <- movieset_clean %>% select(name, rating, genre, year, score, vo
 print(final_movieset)
 ```
 
-=======
-<<<<<<< HEAD
 We will be using genre, rating, and country as prediction variables because gross revenue has a correlation with those three. Due to the high number of unique entries of company, director, writer, and star, we have decided to exclude these variables from our predictive model.
-=======
->>>>>>> 896d4edf4f8d1f2bba25ad3dae35166e61871439
+
 ## Splitting dataset into train and test
 ```{r}
 set.seed(2017)
@@ -201,11 +198,7 @@ test <- final_movieset[-split, ]
 dim(train)
 dim(test)
 ```
-<<<<<<< HEAD
 
 ## Training the model
 ```{r}
 ```
-=======
->>>>>>> aa361e3acd3c7e8500e8ad802b4dd6d3ad488045
->>>>>>> 896d4edf4f8d1f2bba25ad3dae35166e61871439
