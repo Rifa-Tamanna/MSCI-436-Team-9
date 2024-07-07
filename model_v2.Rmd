@@ -26,7 +26,7 @@ movieset <- read.csv("output.csv")
 print(movieset)
 ```
 
-```{r numerical correlation}
+```{r numerical plots}
 
 p1 <- ggplot(aes(x=year), data=movieset) + 
   geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('year')
@@ -42,7 +42,7 @@ grid.arrange(p1, p2, p3, p4, p5, ncol=2)
 
 ```
 
-```{r correlation matrix}
+```{r numerical correlation matrix}
 hist(movieset$gross, breaks = 30)
 summary(movieset$gross)
 
@@ -70,14 +70,12 @@ barplot(bin_freq,
      xlab = "Bins",
      ylab = "Frequency")
 
-
 ```
-
 
 
 ## Including Plots
 
-```{r}
+```{r categorical plots}
 
 #Plotting genre to gross frequency
 p1 <- ggplot(aes(x = genre), data = movieset) +
@@ -93,6 +91,46 @@ grid.arrange(p1, ncol = 2)
 boxplot(movieset$gross_equal_width_bins ~ genre, data = movieset,
         main = 'Gross Revenue vs. Genre', 
         xlab = 'Genre', 
+        ylab = 'Gross Revenue',
+        las = 2,   # Rotate x-axis labels to be vertical
+        cex.axis = 0.8, # Reduce the font size of axis labels
+        par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
+
+
+#Plotting rating to gross frequency
+p2 <- ggplot(aes(x = rating), data = movieset) +
+  geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
+  ylab('Percentage') +
+  ggtitle('Rating') +
+  coord_flip()
+
+
+grid.arrange(p2, ncol = 2)
+
+# Create boxplot
+boxplot(movieset$gross_equal_width_bins ~ rating, data = movieset,
+        main = 'Gross Revenue vs. Rating', 
+        xlab = 'Rating', 
+        ylab = 'Gross Revenue',
+        las = 2,   # Rotate x-axis labels to be vertical
+        cex.axis = 0.8, # Reduce the font size of axis labels
+        par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
+
+
+#Plotting country to gross frequency
+p3 <- ggplot(aes(x = country), data = movieset) +
+  geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
+  ylab('Percentage') +
+  ggtitle('Country') +
+  coord_flip()
+
+
+grid.arrange(p3, ncol = 2)
+
+# Create boxplot
+boxplot(movieset$gross_equal_width_bins ~ country, data = movieset,
+        main = 'Gross Revenue vs. Country', 
+        xlab = 'Country', 
         ylab = 'Gross Revenue',
         las = 2,   # Rotate x-axis labels to be vertical
         cex.axis = 0.8, # Reduce the font size of axis labels
