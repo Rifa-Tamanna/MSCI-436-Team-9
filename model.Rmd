@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)   
 library(readr)  
 library(ggplot2)
-library(statsr)
+# library(statsr)
 library(gridExtra)
 library(corrplot)
 library(tidyr)
@@ -118,7 +118,7 @@ print(correlation_matrix)
 #      xlab = "Bins",
 #      ylab = "Frequency")
 
-custom_breaks <- c(0, 1500000, 30000000, 60000000, 9000000, Inf)
+custom_breaks <- c(0, 1500000, 30000000, 60000000, 90000000, Inf)
 bin_labels <- c("Very Low", "Low", "Medium", "High", "Very High")
 
 cleaned_genres_df$gross_equal_width_bins <- cut(cleaned_genres_df$gross, breaks = custom_breaks, labels = bin_labels, include.lowest = TRUE, right = FALSE)
@@ -139,6 +139,8 @@ barplot(bin_freq,
 # grid.arrange(p1, ncol = 2)
 # 
 
+# GGplot for Genres 
+
 # Step 1: Reshape the dataset
 cleaned_genres_df <- cleaned_genres_df %>%
   mutate(genres = paste(genre_1, genre_2, genre_3, sep = "|")) %>%
@@ -155,13 +157,58 @@ p1 <- ggplot(aes(x = genres), data = cleaned_genres_df) +
 # Step 3: Arrange the plot
 grid.arrange(p1, ncol = 2)
 
-# Create boxplot
+# Create boxplot for genres
 boxplot(cleaned_genres_df$gross_equal_width_bins ~ genres, data = cleaned_genres_df,
         main = 'Gross Revenue vs. Genre', 
         xlab = 'Genre', 
         ylab = 'Gross Revenue',
         las = 2,   # Rotate x-axis labels to be vertical
         cex.axis = 0.8, # Reduce the font size of axis labels
+        par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
+
+# GGplot for Actor 1 
+
+# Step 2: Create a bar plot for genres
+p1 <- ggplot(aes(x = actor_1_name), data = cleaned_genres_df) +
+  geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
+  ylab('Percentage') +
+  ggtitle('Genres') +
+  coord_flip()
+
+# Step 3: Arrange the plot
+grid.arrange(p1, ncol = 2)
+
+# Create boxplot for actor 1
+top_actors <- head(sort(table(cleaned_genres_df$actor_1_name), decreasing = TRUE), 20)
+cleaned_genres_df_subset <- subset(cleaned_genres_df, actor_1_name %in% names(top_actors))
+
+boxplot(cleaned_genres_df$gross_equal_width_bins ~ actor_1_name, data = cleaned_genres_df,
+        main = 'Gross Revenue vs. Actor 1', 
+        xlab = 'Actor 1', 
+        ylab = 'Gross Revenue',
+        las = 2,   # Rotate x-axis labels to be vertical
+        cex.axis = 0.8, # Reduce the font size of axis labels
+        boxwex = 0.8,
+        par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
+
+# Create boxplot for actor 2
+boxplot(cleaned_genres_df$gross_equal_width_bins ~ actor_2_name, data = cleaned_genres_df,
+        main = 'Gross Revenue vs. Actor 2', 
+        xlab = 'Actor 2', 
+        ylab = 'Gross Revenue',
+        las = 2,   # Rotate x-axis labels to be vertical
+        cex.axis = 0.8, # Reduce the font size of axis labels
+        boxwex = 0.8,
+        par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
+
+# Create boxplot for actor 3
+boxplot(cleaned_genres_df$gross_equal_width_bins ~ actor_3_name, data = cleaned_genres_df,
+        main = 'Gross Revenue vs. Actor 3', 
+        xlab = 'Actor 3', 
+        ylab = 'Gross Revenue',
+        las = 2,   # Rotate x-axis labels to be vertical
+        cex.axis = 0.8, # Reduce the font size of axis labels
+        boxwex = 0.8,
         par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
 
 # # Summarize by director_name
