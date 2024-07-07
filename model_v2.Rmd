@@ -199,6 +199,8 @@ dim(train)
 dim(test)
 ```
 
-## Training the model
+## Determining the order of predictors 
 ```{r}
+full_model <- lm(gross~rating+genre+year+score+votes+country+budget+runtime, data=train)
+summary(full_model)
 ```
