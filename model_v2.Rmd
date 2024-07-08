@@ -22,7 +22,7 @@ library(tidyr)
 
 ## Dataset 
 ```{r dataset}
-movieset <- read.csv("output.csv")
+movieset <- read.csv("C://Users/sanje/Documents/MSCI-436-Team-9/output.csv")
 print(movieset)
 ```
 
@@ -183,7 +183,19 @@ grid.arrange(p7, ncol = 2)
 str(movieset)
 movieset_clean <- na.omit(movieset)
 
-final_movieset <- movieset_clean %>% select(name, genre, year, score, votes, budget, gross, runtime)
+final_movieset <- movieset_clean %>% select(name, genre, year, rating, score, votes, budget, gross, runtime)
+final_movieset <- subset(final_movieset, genre != "Western")
+final_movieset <- subset(final_movieset, genre != "Family")
+final_movieset <- subset(final_movieset, genre != "Thriller")
+final_movieset <- subset(final_movieset, genre != "Sci-Fi")
+final_movieset <- subset(final_movieset, genre != "Romance")
+final_movieset <- subset(final_movieset, genre != "Mystery")
+final_movieset <- subset(final_movieset, rating != "X")
+final_movieset <- subset(final_movieset, rating != "Unrated")
+final_movieset <- subset(final_movieset, rating != "TV-MA")
+final_movieset <- subset(final_movieset, rating != "NC-17")
+final_movieset <- subset(final_movieset, rating != "Approved")
+final_movieset <- subset(final_movieset, rating != "Not Rated")
 print(final_movieset)
 ```
 
@@ -275,7 +287,7 @@ predict(fit6, new_movie, interval = "prediction", level = 0.05)
 ```{r}
 library(randomForest)
 
-last_movie <- final_movieset %>% select(name, genre, budget, gross, runtime)
+last_movie <- final_movieset %>% select(name, genre, budget, gross, rating, runtime)
 print(last_movie)
 
 x <- last_movie[, - which(names(last_movie) == "gross")]
