@@ -72,9 +72,23 @@ numeric_columns <- setdiff(numeric_columns, "gross")
 numeric_vars <- movieset[, numeric_columns]
 print(names(numeric_vars))
 
+
+#correlation_matrix <- cor(numeric_vars)
+#print(correlation_matrix)
+
+# Assuming numeric_vars is your dataframe with numeric variables
 correlation_matrix <- cor(numeric_vars)
+
+# Print the correlation matrix (optional)
 print(correlation_matrix)
+
+# Visualize the correlation matrix using corrplot
+corrplot(correlation_matrix, method = "color", type = "upper", 
+         order = "hclust", tl.col = "black", tl.srt = 45, 
+         addCoef.col = "black", number.cex = 0.7, 
+         col = colorRampPalette(c("red", "white", "blue"))(200))
 ```
+
 As the correlation between all of the numerical variables are relatively low, they can all be used for the prediction analysis. 
 
 ```{r categorical plots}
