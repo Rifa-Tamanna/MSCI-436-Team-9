@@ -249,8 +249,6 @@ summary(fit5)
 ```{r}
 fit6 <- lm(gross ~ votes + budget + genre + score + runtime, data=train)
 summary(fit6)
-last_movie <- final_movieset %>% select(name, genre, score, votes, budget, gross, runtime)
-print(last_movie)
 ```
 
 ## Predicting the Model
@@ -276,6 +274,9 @@ predict(fit6, new_movie, interval = "prediction", level = 0.05)
 ## Random Forest Algorithm
 ```{r}
 library(randomForest)
+
+last_movie <- final_movieset %>% select(name, genre, budget, gross, runtime)
+print(last_movie)
 
 x <- last_movie[, - which(names(last_movie) == "gross")]
 y <- last_movie$gross
