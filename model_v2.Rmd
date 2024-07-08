@@ -22,7 +22,7 @@ library(tidyr)
 
 ## Dataset 
 ```{r dataset}
-movieset <- read.csv("C://Users/sanje/Documents/MSCI-436-Team-9/output.csv")
+movieset <- read.csv("output.csv")
 print(movieset)
 ```
 
@@ -61,7 +61,7 @@ p5 <- ggplot(aes(x=runtime), data=movieset) +
 grid.arrange(p1, p2, p3, p4, p5, ncol=2)
 
 ```
-For the analysis, we will be using year, score, log(votes), log(budget) and runtime. They all have reasonably broad distributions which make them appropriate candid ates.
+For the analysis, we will be using year, score, log(votes), log(budget) and runtime. They all have reasonably broad distributions which make them appropriate candidates.
 
 ```{r numerical correlation matrix}
 hist(movieset$gross, breaks = 30)
@@ -183,7 +183,7 @@ grid.arrange(p7, ncol = 2)
 str(movieset)
 movieset_clean <- na.omit(movieset)
 
-final_movieset <- movieset_clean %>% select(name, genre, year, rating, score, votes, budget, gross, runtime)
+final_movieset <- movieset_clean %>% select(name, genre, rating, budget, gross, runtime)
 final_movieset <- subset(final_movieset, genre != "Western")
 final_movieset <- subset(final_movieset, genre != "Family")
 final_movieset <- subset(final_movieset, genre != "Thriller")
@@ -201,89 +201,29 @@ print(final_movieset)
 
 We will be using genre, rating, and country as prediction variables because gross revenue has a correlation with those three. Due to the high number of unique entries of company, director, writer, and star, we have decided to exclude these variables from our predictive model.
 
-## Splitting dataset into train and test
-```{r}
-set.seed(2017)
-split <- sample(seq_len(nrow(final_movieset)), size = floor(0.7 * nrow(final_movieset)))
-train <- final_movieset[split, ]
-test <- final_movieset[-split, ]
-print(test)
-dim(train)
-dim(test)
-```
 
-## Determining the order of predictors 
-```{r}
-full_model <- lm(gross~genre+year+score+votes+budget+runtime, data=train)
-summary(full_model)
-```
-## Creating a model 
-```{r}
-fit1 <- lm(gross ~ votes, data=train)
-summary(fit1)
-```
-
-```{r}
-fit_model <- lm(gross~genre+year+score+budget+runtime, data=train)
-print(fit_model)
-```
-
-```{r}
-fit2 <- lm(gross ~ votes + budget, data=train)
-summary(fit2)
-```
-
-```{r}
-fit_model_2 <- lm(gross~genre+year+score+runtime, data=train)
-print(fit_model_2)
-```
-
-```{r}
-fit3 <- lm(gross ~ votes + budget + genre, data=train)
-summary(fit3)
-```
-
-```{r}
-fit_model_3 <- lm(gross~year+score+runtime, data=train)
-print(fit_model_3)
-```
-
-```{r}
-fit4 <- lm(gross ~ votes + budget + genre, data=train)
-summary(fit4)
-```
-
-```{r}
-fit5 <- lm(gross ~ votes + budget + genre + score, data=train)
-summary(fit5)
-```
-
-```{r}
-fit6 <- lm(gross ~ votes + budget + genre + score + runtime, data=train)
-summary(fit6)
-```
-
-## Predicting the Model
-```{r}
-print(test)
-# colnames(test)
-# new_movie <- test %>% filter(name == "Xanadu") %>% select(votes, budget, genre, rating, score, runtime)
-new_movie <- test %>% select(votes, budget, genre, score, runtime)
-print(new_movie)
-
-# any(is.na(new_movie))
-
-# new_movie$rating <- factor(new_movie$rating, levels = levels(train$rating))
-# new_movie$genre <- factor(new_movie$genre, levels = levels(train$genre))
-
-# Make predictions
-predict(fit6, new_movie)
-
-```
-```{r}
-predict(fit6, new_movie, interval = "prediction", level = 0.05)
-```
 ## Random Forest Algorithm
+```{r feature importance}
+# Define the feature matrix and target variable
+x <- final_movieset %>% select(-gross)
+y <- final_movieset$gross
+
+# Train a Random Forest model
+set.seed(42)
+rf_model <- randomForest(x, y, ntree = 100, importance = TRUE)
+
+# Get feature importance
+importance <- importance(rf_model)
+importance_df <- data.frame(Feature = rownames(importance), Importance = importance[, 1])
+importance_df <- importance_df %>% arrange(desc(Importance))
+print(importance_df)
+
+# Plot feature importance
+ggplot(importance_df, aes(x = reorder(Feature, Importance), y = Importance)) +
+  geom_bar(stat = "identity") + coord_flip() + ggtitle("Feature Importance")
+
+```
+
 ```{r}
 library(randomForest)
 
@@ -299,8 +239,9 @@ X_train <- x[train_indices, ]
 y_train <- y[train_indices]
 X_test <- x[-train_indices, ]
 y_test <- y[-train_indices]
-print(X_test)
 
+# print(X_test)
+# print(y_test)
 
 rf_model <- randomForest(x = X_train, y = y_train, ntree = 100, mtry = 3, importance = TRUE)
 
@@ -310,6 +251,41 @@ print(y_pred)
 
 ```
 
+```{r binning predictions}
+# Define the bins and labels
+bins <- c(0, 7500000, 25000000, 50000000, 150000000, Inf)
+labels <- c("Very low", "Low", "Medium", "High", "Very high")
+
+# Bin the predictions
+y_pred_binned <- cut(y_pred, breaks = bins, labels = labels, right = FALSE)
+
+# Print the binned predictions
+print(y_pred_binned)
+
+# To compare with actual values
+y_test_binned <- cut(y_test, breaks = bins, labels = labels, right = FALSE)
+print(y_test_binned)
+```
+
+## Plotting Graphs For Genre vs Gross Revenue
 ```{r}
+# List of genres to plot
+genres <- c("Mystery", "Horror", "Fantasy", "Drama", "Crime", "Comedy", "Biography", "Animation", "Adventure", "Action")
+
+# Function to create scatter plots for a given genre
+plot_genre <- function(genre) {
+  genre_data <- final_movieset %>% filter(genre == !!genre)
+  ggplot(genre_data, aes(x = 1, y = gross)) +
+    geom_point(position = position_jitter(width = 0.1)) +
+    labs(title = paste("Scatter Plot of", genre, "Movies"),
+         x = "Movie",
+         y = "Gross Revenue") +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels
+}
+
+# Create scatter plots for each genre and print them
+for (genre in genres) {
+  print(plot_genre(genre))
+}
 
 ```
