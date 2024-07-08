@@ -183,7 +183,7 @@ grid.arrange(p7, ncol = 2)
 str(movieset)
 movieset_clean <- na.omit(movieset)
 
-final_movieset <- movieset_clean %>% select(rating, genre, year, score, votes, budget, gross, runtime)
+final_movieset <- movieset_clean %>% select(name, genre, year, score, votes, budget, gross, runtime)
 print(final_movieset)
 ```
 
@@ -195,13 +195,14 @@ set.seed(2017)
 split <- sample(seq_len(nrow(final_movieset)), size = floor(0.7 * nrow(final_movieset)))
 train <- final_movieset[split, ]
 test <- final_movieset[-split, ]
+print(test)
 dim(train)
 dim(test)
 ```
 
 ## Determining the order of predictors 
 ```{r}
-full_model <- lm(gross~rating+genre+year+score+votes+budget+runtime, data=train)
+full_model <- lm(gross~genre+year+score+votes+budget+runtime, data=train)
 summary(full_model)
 ```
 ## Creating a model 
@@ -211,7 +212,7 @@ summary(fit1)
 ```
 
 ```{r}
-fit_model <- lm(gross~rating+genre+year+score+budget+runtime, data=train)
+fit_model <- lm(gross~genre+year+score+budget+runtime, data=train)
 print(fit_model)
 ```
 
@@ -221,7 +222,7 @@ summary(fit2)
 ```
 
 ```{r}
-fit_model_2 <- lm(gross~rating+genre+year+score+runtime, data=train)
+fit_model_2 <- lm(gross~genre+year+score+runtime, data=train)
 print(fit_model_2)
 ```
 
@@ -231,39 +232,71 @@ summary(fit3)
 ```
 
 ```{r}
-fit_model_3 <- lm(gross~rating+year+score+runtime, data=train)
+fit_model_3 <- lm(gross~year+score+runtime, data=train)
 print(fit_model_3)
 ```
 
 ```{r}
-fit4 <- lm(gross ~ votes + budget + genre + rating, data=train)
+fit4 <- lm(gross ~ votes + budget + genre, data=train)
 summary(fit4)
 ```
 
 ```{r}
-fit5 <- lm(gross ~ votes + budget + genre + rating + score, data=train)
+fit5 <- lm(gross ~ votes + budget + genre + score, data=train)
 summary(fit5)
 ```
 
 ```{r}
-fit6 <- lm(gross ~ votes + budget + genre + rating + score + runtime, data=train)
-summary(fit5)
+fit6 <- lm(gross ~ votes + budget + genre + score + runtime, data=train)
+summary(fit6)
+last_movie <- final_movieset %>% select(name, genre, score, votes, budget, gross, runtime)
+print(last_movie)
 ```
 
 ## Predicting the Model
 ```{r}
-new_movie <- test %>% select(votes, budget, genre, rating, score, runtime)
+print(test)
+# colnames(test)
+# new_movie <- test %>% filter(name == "Xanadu") %>% select(votes, budget, genre, rating, score, runtime)
+new_movie <- test %>% select(votes, budget, genre, score, runtime)
+print(new_movie)
 
-new_movie$rating <- factor(new_movie$rating, levels = levels(train$rating))
+# any(is.na(new_movie))
+
+# new_movie$rating <- factor(new_movie$rating, levels = levels(train$rating))
 # new_movie$genre <- factor(new_movie$genre, levels = levels(train$genre))
 
 # Make predictions
 predict(fit6, new_movie)
+
 ```
 ```{r}
 predict(fit6, new_movie, interval = "prediction", level = 0.05)
 ```
+## Random Forest Algorithm
+```{r}
+library(randomForest)
+
+x <- last_movie[, - which(names(last_movie) == "gross")]
+y <- last_movie$gross
+
+set.seed(42)  # For reproducibility
+train_indices <- sample(1:nrow(last_movie), 0.8 * nrow(last_movie))  # 80% for training
+X_train <- x[train_indices, ]
+y_train <- y[train_indices]
+X_test <- x[-train_indices, ]
+y_test <- y[-train_indices]
+print(X_test)
+
+
+rf_model <- randomForest(x = X_train, y = y_train, ntree = 100, mtry = 3, importance = TRUE)
+
+# Predict on the test set
+y_pred <- predict(rf_model, newdata = X_test)
+print(y_pred)
+
+```
 
 ```{r}
-test$gross
+
 ```
