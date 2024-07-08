@@ -270,6 +270,7 @@ print(y_pred)
 bins <- c(0, 7500000, 25000000, 50000000, 150000000, Inf)
 labels <- c("Very low", "Low", "Medium", "High", "Very high")
 
+normal_binned <- cut(last_movie$gross, breaks = bins, labels = labels, right = FALSE)
 # Bin the predictions
 y_pred_binned <- cut(y_pred, breaks = bins, labels = labels, right = FALSE)
 
@@ -280,21 +281,33 @@ print(y_pred_binned)
 y_test_binned <- cut(y_test, breaks = bins, labels = labels, right = FALSE)
 print(y_test_binned)
 ```
+## Calculating the average gross revenue for each genre in the dataset 
+```{r}
+avg_gross <- last_movie %>%
+  group_by(genre) %>%
+  summarise(avg_gross = mean(gross, na.rm = TRUE))
+
+# Print or view avg_gross to see the averages calculated
+print(avg_gross)
+```
 
 ## Plotting Graphs For Genre vs Gross Revenue
 ```{r}
 # List of genres to plot
+final_movieset <- final_movieset %>%
+  mutate(normal_binned = cut(gross, breaks = bins, labels = labels, right = FALSE))
+
 genres <- c("Mystery", "Horror", "Fantasy", "Drama", "Crime", "Comedy", "Biography", "Animation", "Adventure", "Action")
 
-# Function to create scatter plots for a given genre
+# Function to create histograms for a given genre
 plot_genre <- function(genre) {
   genre_data <- final_movieset %>% filter(genre == !!genre)
-  ggplot(genre_data, aes(x = 1, y = gross)) +
-    geom_point(position = position_jitter(width = 0.1)) +
-    labs(title = paste("Scatter Plot of", genre, "Movies"),
-         x = "Movie",
-         y = "Gross Revenue") +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels
+  ggplot(genre_data, aes(x = normal_binned)) +
+    geom_bar() +
+    labs(title = paste("Histogram of", genre, "Movies"),
+         x = "Gross Revenue",
+         y = "Count of Movies") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
 }
 
 # Create scatter plots for each genre and print them
