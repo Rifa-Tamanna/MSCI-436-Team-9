@@ -29,6 +29,7 @@ ui <- fluidPage(
       
       checkboxInput("show_genre", "Show Genre Histogram", value = TRUE),
       
+      checkboxInput("show_budget", "Show Budget Histogram", value = TRUE)
     ),
     
     mainPanel(
@@ -39,6 +40,11 @@ ui <- fluidPage(
       conditionalPanel(
         condition = "input.show_genre == true",
         plotOutput("genre_hist")
+      ),
+      
+      conditionalPanel(
+        condition = "input.show_budget == true",
+        plotOutput("budget_hist")
       )
     )
   )
@@ -136,6 +142,16 @@ server <- function(input, output) {
     plot_genre(input$genre, predicted_bin())
   })
   
+  # Budget histogram
+  output$budget_hist <- renderPlot({
+    pred <- prediction()
+    if (is.na(pred)) {
+      # Handle the case when prediction fails
+      plot_budget(input$genre, input$budget, NA)
+    } else {
+      plot_budget(input$genre, input$budget, pred)
+    }
+  })
  
 }
 

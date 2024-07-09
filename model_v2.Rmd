@@ -327,7 +327,7 @@ plot_genre <- function(genre, predicted_bin, data = final_movieset) {
   
   # Create color vector
   bin_colors <- setNames(rep("grey", 5), c("Very low", "Low", "Medium", "High", "Very high"))
-  bin_colors[predicted_bin] <- "red"
+  bin_colors[predicted_bin] <- "blue"
   
   # Create the plot
   ggplot(genre_data, aes(x = normal_binned, fill = normal_binned)) +
@@ -345,4 +345,47 @@ saveRDS(plot_genre, "plot_genre.rds")
 plot_genre("Horror", "High")
 
 
+# Create a Scatter Plot of Budget vs. Gross Revenue
+
+genre <- "Action"
+genre_data <- final_movieset %>% 
+    filter(genre == !!genre) %>%
+    # Ensure normal_binned is a factor with all levels
+    mutate(normal_binned = factor(normal_binned, levels = c("Very low", "Low", "Medium", "High", "Very high")))
+
+print(genre_data)
+
+plot_budget <- function(genre, input_budget, predicted_value, data = final_moviese){
+  # Filter the data for the specific genre
+  genre_data <- final_movieset %>% 
+      filter(genre == !!genre) %>%
+      # Ensure normal_binned is a factor with all levels
+      mutate(normal_binned = factor(normal_binned, levels = c("Very low", "Low", "Medium", "High", "Very high")))
+  
+  ggplot(genre_data, aes(x = genre_data$budget, y = genre_data$gross)) +
+    geom_point(alpha = 0.5) +
+    #geom_smooth(method = "lm", color = "red", se = FALSE) +
+    geom_point(data = data.frame(budget = input_budget, gross = predicted_value), 
+               aes(x = budget, y = gross), color = "red", size = 5) +
+    scale_x_log10(labels = scales::dollar_format()) +
+    scale_y_log10(labels = scales::dollar_format()) +
+    labs(x = "Budget (log scale)", 
+         y = "Gross Revenue (log scale)", 
+         title = "Budget vs. Gross Revenue") +
+    theme_minimal() +
+    annotate("text", x = input_budget, y = predicted_value, fontface = "bold",
+             label = "Your Movie", vjust = -1, color = "red")
+  
+}
+
+saveRDS(plot_budget, "plot_budget.RDS")
+
+plot_budget("Drama",500000,416018442)
+
+
+
 ```
+
+
+
+
