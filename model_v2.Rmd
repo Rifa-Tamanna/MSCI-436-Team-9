@@ -224,10 +224,10 @@ y <- final_movieset$gross
 
 # Train a Random Forest model
 set.seed(42)
-rf_model <- randomForest(x, y, ntree = 100, importance = TRUE)
+rf_model_importance <- randomForest(x, y, ntree = 100, importance = TRUE)
 
 # Get feature importance
-importance <- importance(rf_model)
+importance <- importance(rf_model_importance)
 importance_df <- data.frame(Feature = rownames(importance), Importance = importance[, 1])
 importance_df <- importance_df %>% arrange(desc(Importance))
 print(importance_df)
