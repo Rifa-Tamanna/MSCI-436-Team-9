@@ -18,6 +18,8 @@ library(ggplot2)
 library(gridExtra)
 library(corrplot)
 library(tidyr)
+library(caret)
+
 ```
 
 ## Dataset 
@@ -271,6 +273,7 @@ y_test <- y[-train_indices]
 
 # Train the Random Forest model
 rf_model <- randomForest(x = X_train, y = y_train, ntree = 100, mtry = 3, importance = TRUE)
+saveRDS(rf_model, file = "rf_model.rds")
 
 # Predict on the test set
 y_pred <- predict(rf_model, newdata = X_test)
@@ -307,26 +310,39 @@ print(avg_gross)
 
 ## Plotting Graphs For Genre vs Gross Revenue
 ```{r}
-# List of genres to plot
+# Define bins and labels
+bins <- c(0, 7500000, 25000000, 50000000, 150000000, Inf)
+labels <- c("Very low", "Low", "Medium", "High", "Very high")
+
+# Prepare the dataset
 final_movieset <- final_movieset %>%
   mutate(normal_binned = cut(gross, breaks = bins, labels = labels, right = FALSE))
 
-genres <- c("Mystery", "Horror", "Fantasy", "Drama", "Crime", "Comedy", "Biography", "Animation", "Adventure", "Action")
-
-# Function to create histograms for a given genre
-plot_genre <- function(genre) {
-  genre_data <- final_movieset %>% filter(genre == !!genre)
-  ggplot(genre_data, aes(x = normal_binned)) +
+plot_genre <- function(genre, predicted_bin, data = final_movieset) {
+  # Filter the data for the specific genre
+  genre_data <- data %>% 
+    filter(genre == !!genre) %>%
+    # Ensure normal_binned is a factor with all levels
+    mutate(normal_binned = factor(normal_binned, levels = c("Very low", "Low", "Medium", "High", "Very high")))
+  
+  # Create color vector
+  bin_colors <- setNames(rep("grey", 5), c("Very low", "Low", "Medium", "High", "Very high"))
+  bin_colors[predicted_bin] <- "red"
+  
+  # Create the plot
+  ggplot(genre_data, aes(x = normal_binned, fill = normal_binned)) +
     geom_bar() +
+    scale_fill_manual(values = bin_colors) +
     labs(title = paste("Histogram of", genre, "Movies"),
          x = "Gross Revenue",
          y = "Count of Movies") +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    guides(fill = "none")
 }
+saveRDS(plot_genre, "plot_genre.rds")
 
-# Create scatter plots for each genre and print them
-for (genre in genres) {
-  print(plot_genre(genre))
-}
+# Now you can call the function like this:
+plot_genre("Horror", "High")
+
 
 ```
