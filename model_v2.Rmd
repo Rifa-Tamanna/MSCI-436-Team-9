@@ -290,8 +290,6 @@ y_pred <- predict(rf_model, newdata = X_test)
 print(X_test)
 ```
 
-
-
 ```{r binning predictions}
 # Define the bins and labels
 bins <- c(0, 7500000, 25000000, 50000000, 150000000, Inf)
@@ -308,6 +306,7 @@ print(y_pred_binned)
 y_test_binned <- cut(y_test, breaks = bins, labels = labels, right = FALSE)
 print(y_test_binned)
 ```
+
 ## Calculating the average gross revenue for each genre in the dataset 
 ```{r}
 avg_gross <- last_movie %>%
@@ -396,6 +395,7 @@ plot_budget("Drama",500000,416018442)
 
 ```
 
+
 ```{r}
 
 # Define bins and labels
@@ -417,6 +417,7 @@ plot_rating <- function(rating, predicted_bin, data = final_movieset) {
   bin_colors <- setNames(rep("grey", 5), c("Very low", "Low", "Medium", "High", "Very high"))
   bin_colors[predicted_bin] <- "red"
 
+
   # Create the plot
   ggplot(rating_data, aes(x = normal_binned, fill = normal_binned)) +
     geom_bar() +
@@ -432,5 +433,3 @@ saveRDS(plot_rating, "plot_rating.rds")
 plot_rating("R", "High")
 
 ```
-
-

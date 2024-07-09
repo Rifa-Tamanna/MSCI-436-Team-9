@@ -33,6 +33,7 @@ ui <- fluidPage(
       checkboxInput("show_budget", "Show Budget Histogram", value = TRUE),
       
       checkboxInput("show_rating", "Show Rating Histogram", value = TRUE)
+
     ),
     
     mainPanel(
@@ -51,6 +52,7 @@ ui <- fluidPage(
       ),
       
       conditionalPanel(
+
         condition = "input.show_rating == true",
         plotOutput("rating_hist")
       )
@@ -162,10 +164,12 @@ server <- function(input, output) {
     }
   })
   
+
   # Rating histogram
   output$rating_hist <- renderPlot({
     plot_rating(input$rating, predicted_bin())
   })
+
  
 }
 
