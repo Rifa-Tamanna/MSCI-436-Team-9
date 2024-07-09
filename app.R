@@ -4,6 +4,7 @@ library(randomForest)
 # Load Model 
 rf_model <- readRDS("rf_model.rds")
 plot_genre <- readRDS("plot_genre.rds")
+plot_rating <- readRDS("plot_rating.rds")
 
 
 
@@ -29,6 +30,8 @@ ui <- fluidPage(
       
       checkboxInput("show_genre", "Show Genre Histogram", value = TRUE),
       
+      checkboxInput("show_rating", "Show Rating Histogram", value = TRUE)
+      
     ),
     
     mainPanel(
@@ -39,6 +42,11 @@ ui <- fluidPage(
       conditionalPanel(
         condition = "input.show_genre == true",
         plotOutput("genre_hist")
+      ),
+      
+      conditionalPanel(
+        condition = "input.show_rating == true",
+        plotOutput("rating_hist")
       )
     )
   )
@@ -134,6 +142,11 @@ server <- function(input, output) {
   # Genre histogram
   output$genre_hist <- renderPlot({
     plot_genre(input$genre, predicted_bin())
+  })
+  
+  # Rating histogram
+  output$rating_hist <- renderPlot({
+    plot_rating(input$rating, predicted_bin())
   })
   
  
