@@ -4,6 +4,7 @@ library(randomForest)
 # Load Model 
 rf_model <- readRDS("rf_model.rds")
 plot_genre <- readRDS("plot_genre.rds")
+plot_rating <- readRDS("plot_rating.rds")
 
 
 
@@ -21,7 +22,7 @@ ui <- fluidPage(
       
       numericInput("budget", "Movie Budget (in $)", value = 50000000, min = 1),
       
-      selectInput("rating", "Movie Rating", choices = c("G", "PG", "PG-13" ="PG.13", "R"), selected = "G"),
+      selectInput("rating", "Movie Rating", choices = c("G", "PG", "PG-13"="PG.13", "R"), selected = "G"),
       
       selectInput("genre", "Genre",
                   choices = c("Action","Adventure", "Animation", "Biography", "Comedy", "Crime", "Drama", "Fantasy", "Horror"), 
@@ -29,7 +30,9 @@ ui <- fluidPage(
       
       checkboxInput("show_genre", "Show Genre Histogram", value = TRUE),
       
-      checkboxInput("show_budget", "Show Budget Histogram", value = TRUE)
+      checkboxInput("show_budget", "Show Budget Histogram", value = TRUE),
+      
+      checkboxInput("show_rating", "Show Rating Histogram", value = TRUE)
     ),
     
     mainPanel(
@@ -45,7 +48,13 @@ ui <- fluidPage(
       conditionalPanel(
         condition = "input.show_budget == true",
         plotOutput("budget_hist")
+      ),
+      
+      conditionalPanel(
+        condition = "input.show_rating == true",
+        plotOutput("rating_hist")
       )
+      
     )
   )
 )
@@ -64,7 +73,7 @@ server <- function(input, output) {
   
   # Create a reactive expression for rating data
   rating_data <- reactive({
-    ratings <- c("G", "PG", "PG.13", "R")
+    ratings <- c("G", "PG", "PG-13", "R")
     data <- as.data.frame(matrix(0, nrow = 1, ncol = length(ratings)))
     colnames(data) <- paste0("rating", ratings)
     data[, paste0("rating", input$rating)] <- 1
@@ -151,6 +160,11 @@ server <- function(input, output) {
     } else {
       plot_budget(input$genre, input$budget, pred)
     }
+  })
+  
+  # Rating histogram
+  output$rating_hist <- renderPlot({
+    plot_rating(input$rating, predicted_bin())
   })
  
 }

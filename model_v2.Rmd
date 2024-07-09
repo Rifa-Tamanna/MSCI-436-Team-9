@@ -253,17 +253,20 @@ library(caret)
 
 # Ensure you have the final_movieset dataset with the same structure as above
 last_movie <- final_movieset %>% select(name, genre, budget, gross, rating, runtime)
-print(last_movie)
+# print(last_movie)
 
 # One-hot encode the genre and rating columns in last_movie
 dummies <- dummyVars(~ genre + rating, data = last_movie)
 x <- data.frame(predict(dummies, newdata = last_movie))
+
+
 
 # Add remaining numeric columns
 x$budget <- last_movie$budget
 x$runtime <- last_movie$runtime
 y <- last_movie$gross
 
+print(last_movie)
 set.seed(42)  # For reproducibility
 train_indices <- sample(1:nrow(last_movie), 0.8 * nrow(last_movie))  # 80% for training
 X_train <- x[train_indices, ]
@@ -271,13 +274,20 @@ y_train <- y[train_indices]
 X_test <- x[-train_indices, ]
 y_test <- y[-train_indices]
 
+#X_train <- rename(X_train, "ratingPG-13" = "ratingPG.13")
+#X_test <- rename(X_test, "ratingPG-13" = "ratingPG.13")
+
+
+print(X_train)
+print(y_train)
 # Train the Random Forest model
 rf_model <- randomForest(x = X_train, y = y_train, ntree = 100, mtry = 3, importance = TRUE)
 saveRDS(rf_model, file = "rf_model.rds")
 
 # Predict on the test set
 y_pred <- predict(rf_model, newdata = X_test)
-print(y_pred)
+
+print(X_test)
 ```
 
 
@@ -386,6 +396,41 @@ plot_budget("Drama",500000,416018442)
 
 ```
 
+```{r}
 
+# Define bins and labels
+bins <- c(0, 7500000, 25000000, 50000000, 150000000, Inf)
+labels <- c("Very low", "Low", "Medium", "High", "Very high")
+
+# Prepare the dataset
+final_movieset <- final_movieset %>%
+  mutate(normal_binned = cut(gross, breaks = bins, labels = labels, right = FALSE))
+
+plot_rating <- function(rating, predicted_bin, data = final_movieset) {
+  # Filter the data for the specific genre
+  rating_data <- data %>% 
+    filter(rating == !!rating) %>%
+    # Ensure normal_binned is a factor with all levels
+    mutate(normal_binned = factor(normal_binned, levels = c("Very low", "Low", "Medium", "High", "Very high")))
+
+  # Create color vector
+  bin_colors <- setNames(rep("grey", 5), c("Very low", "Low", "Medium", "High", "Very high"))
+  bin_colors[predicted_bin] <- "red"
+
+  # Create the plot
+  ggplot(rating_data, aes(x = normal_binned, fill = normal_binned)) +
+    geom_bar() +
+    scale_fill_manual(values = bin_colors) +
+    labs(title = paste("Histogram of", rating, "Movies"),
+         x = "Gross Revenue",
+         y = "Count of Movies") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    guides(fill = "none")
+}
+saveRDS(plot_rating, "plot_rating.rds")
+# Now you can call the function like this:
+plot_rating("R", "High")
+
+```
 
 
