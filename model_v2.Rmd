@@ -219,7 +219,12 @@ We will be using genre, rating, and country as prediction variables because gros
 ## Random Forest Algorithm
 ```{r feature importance}
 # Define the feature matrix and target variable
+library(randomForest)
+
 x <- final_movieset %>% select(-gross)
+x <- data.frame(model.matrix(~genre + rating - 1, data = x))
+x$budget <- final_movieset$budget
+x$runtime <- final_movieset$runtime
 y <- final_movieset$gross
 
 # Train a Random Forest model
@@ -238,13 +243,23 @@ ggplot(importance_df, aes(x = reorder(Feature, Importance), y = Importance)) +
 
 ```
 
+
 ```{r}
 library(randomForest)
 
+library(caret)
+
+# Ensure you have the final_movieset dataset with the same structure as above
 last_movie <- final_movieset %>% select(name, genre, budget, gross, rating, runtime)
 print(last_movie)
 
-x <- last_movie[, - which(names(last_movie) == "gross")]
+# One-hot encode the genre and rating columns in last_movie
+dummies <- dummyVars(~ genre + rating, data = last_movie)
+x <- data.frame(predict(dummies, newdata = last_movie))
+
+# Add remaining numeric columns
+x$budget <- last_movie$budget
+x$runtime <- last_movie$runtime
 y <- last_movie$gross
 
 set.seed(42)  # For reproducibility
@@ -254,16 +269,15 @@ y_train <- y[train_indices]
 X_test <- x[-train_indices, ]
 y_test <- y[-train_indices]
 
-# print(X_test)
-# print(y_test)
-
+# Train the Random Forest model
 rf_model <- randomForest(x = X_train, y = y_train, ntree = 100, mtry = 3, importance = TRUE)
 
 # Predict on the test set
 y_pred <- predict(rf_model, newdata = X_test)
 print(y_pred)
-
 ```
+
+
 
 ```{r binning predictions}
 # Define the bins and labels
