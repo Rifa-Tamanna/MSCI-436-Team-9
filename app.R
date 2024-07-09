@@ -40,6 +40,9 @@ ui <- fluidPage(
       h3("Predicted Movie Success:"),
       verbatimTextOutput("prediction"),
       verbatimTextOutput("bin"),
+      verbatimTextOutput("suggestions"),
+      
+      
       
       conditionalPanel(
         condition = "input.show_genre == true",
@@ -163,14 +166,66 @@ server <- function(input, output) {
       plot_budget(input$genre, input$budget, pred)
     }
   })
-  
 
   # Rating histogram
   output$rating_hist <- renderPlot({
     plot_rating(input$rating, predicted_bin())
   })
-
- 
+  
+  suggest_changes <- function(new_movie_data, desired_bin) {
+    suggestions <- list()
+    
+    # Check budget
+    if (new_movie_data$budget < 25000000) {
+      suggestions$budget <- paste("Increase the budget to at least $25 million to potentially move to the", desired_bin, "bin.")
+    } else {
+      suggestions$budget <- "Budget is sufficient."
+    }
+    
+    # Check rating
+    if (new_movie_data$rating == "R") {
+      suggestions$rating <- paste("Consider a lower rating like PG-13 or PG to potentially move to the", desired_bin, "bin.")
+    } else {
+      suggestions$rating <- "Rating is appropriate."
+    }
+    
+    # Check runtime
+    if (new_movie_data$runtime < 100) {
+      suggestions$runtime <- paste("Increase the runtime to at least 100 minutes to potentially move to the", desired_bin, "bin.")
+    } else {
+      suggestions$runtime <- "Runtime is sufficient."
+    }
+    
+    return(suggestions)
+  }
+  
+  output$suggestions <- renderText({
+    pred <- prediction()
+    if (is.na(pred)) {
+      "No suggestions available due to prediction error."
+    } else {
+      next_bin <- switch(predicted_bin(),
+                         "Very low" = "Low",
+                         "Low" = "Medium",
+                         "Medium" = "High",
+                         "High" = "Very high",
+                         "Very high" = "Very high")
+      
+      suggestions <- suggest_changes(data.frame(
+        budget = input$budget,
+        genre = input$genre,
+        rating = input$rating,
+        runtime = input$runtime
+      ), next_bin)
+      # Format the suggestions as a single string
+      suggestion_text <- paste("Suggestions to move to the", next_bin, "bin:\n",
+                               "- Budget: ", suggestions$budget, "\n",
+                               "- Rating: ", suggestions$rating, "\n",
+                               "- Runtime: ", suggestions$runtime, "\n")
+      return(suggestion_text)
+    }
+    
+  })
 }
 
 # Create the Shiny app object

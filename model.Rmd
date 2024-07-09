@@ -220,3 +220,86 @@ boxplot(cleaned_genres_df$gross_equal_width_bins ~ actor_3_name, data = cleaned_
 
 
 ```
+
+
+## Splitting dataset into train and test
+```{r}
+# set.seed(2017)
+# split <- sample(seq_len(nrow(final_movieset)), size = floor(0.7 * nrow(final_movieset)))
+# train <- final_movieset[split, ]
+# test <- final_movieset[-split, ]
+# dim(train)
+# dim(test)
+```
+
+## Determining the order of predictors 
+```{r}
+full_model <- lm(gross~genre+year+score+votes+budget+runtime, data=train)
+summary(full_model)
+```
+## Creating a model 
+```{r}
+fit1 <- lm(gross ~ votes, data=train)
+summary(fit1)
+```
+
+```{r}
+fit_model <- lm(gross~genre+year+score+budget+runtime, data=train)
+print(fit_model)
+```
+
+```{r}
+fit2 <- lm(gross ~ votes + budget, data=train)
+summary(fit2)
+```
+
+```{r}
+fit_model_2 <- lm(gross~genre+year+score+runtime, data=train)
+print(fit_model_2)
+```
+
+```{r}
+fit3 <- lm(gross ~ votes + budget + genre, data=train)
+summary(fit3)
+```
+
+```{r}
+fit_model_3 <- lm(gross~year+score+runtime, data=train)
+print(fit_model_3)
+```
+
+```{r}
+fit4 <- lm(gross ~ votes + budget + genre, data=train)
+summary(fit4)
+```
+
+```{r}
+fit5 <- lm(gross ~ votes + budget + genre + score, data=train)
+summary(fit5)
+```
+
+```{r}
+fit6 <- lm(gross ~ votes + budget + genre + score + runtime, data=train)
+summary(fit6)
+```
+
+## Predicting the Model
+```{r}
+# print(test)
+# colnames(test)
+# new_movie <- test %>% filter(name == "Xanadu") %>% select(votes, budget, genre, rating, score, runtime)
+new_movie <- test %>% select(votes, budget, genre, score, runtime)
+# print(new_movie)
+
+# any(is.na(new_movie))
+
+# new_movie$rating <- factor(new_movie$rating, levels = levels(train$rating))
+# new_movie$genre <- factor(new_movie$genre, levels = levels(train$genre))
+
+# Make predictions
+# predict(fit6, new_movie)
+
+```
+```{r}
+predict(fit6, new_movie, interval = "prediction", level = 0.05)
+```

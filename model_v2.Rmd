@@ -260,7 +260,6 @@ dummies <- dummyVars(~ genre + rating, data = last_movie)
 x <- data.frame(predict(dummies, newdata = last_movie))
 
 
-
 # Add remaining numeric columns
 x$budget <- last_movie$budget
 x$runtime <- last_movie$runtime
@@ -331,6 +330,7 @@ plot_genre <- function(genre, predicted_bin, data = final_movieset) {
   # Filter the data for the specific genre
   genre_data <- data %>% 
     filter(genre == !!genre) %>%
+    
     # Ensure normal_binned is a factor with all levels
     mutate(normal_binned = factor(normal_binned, levels = c("Very low", "Low", "Medium", "High", "Very high")))
   
@@ -353,9 +353,10 @@ saveRDS(plot_genre, "plot_genre.rds")
 # Now you can call the function like this:
 plot_genre("Horror", "High")
 
+```
 
 # Create a Scatter Plot of Budget vs. Gross Revenue
-
+```{r}
 genre <- "Action"
 genre_data <- final_movieset %>% 
     filter(genre == !!genre) %>%
@@ -390,8 +391,6 @@ plot_budget <- function(genre, input_budget, predicted_value, data = final_movie
 saveRDS(plot_budget, "plot_budget.RDS")
 
 plot_budget("Drama",500000,416018442)
-
-
 
 ```
 
