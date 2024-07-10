@@ -139,7 +139,7 @@ server <- function(input, output) {
     }
   })
   
-  # Find the bin (as a reactive expression)
+  # Find the bin
   predicted_bin <- reactive({
     pred <- prediction()
     if (is.na(pred)) {
@@ -156,7 +156,7 @@ server <- function(input, output) {
     plot_genre(input$genre, predicted_bin())
   })
   
-  # Budget histogram
+  # Budget scatterplot
   output$budget_hist <- renderPlot({
     pred <- prediction()
     if (is.na(pred)) {

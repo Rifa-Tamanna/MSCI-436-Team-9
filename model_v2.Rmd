@@ -354,7 +354,10 @@ plot_budget <- function(genre, input_budget, predicted_value, data = final_movie
          title = "Budget vs. Gross Revenue") +
     theme_minimal() +
     annotate("text", x = input_budget, y = predicted_value, fontface = "bold",
-             label = "Your Movie", vjust = -1, color = "red")
+             label = "Your Movie", vjust = -1, color = "red") + 
+    annotate("text", x = min(genre_data$budget), y = max(genre_data$gross), hjust = 0,
+             label = "This graph shows the relationship between budget and gross revenue for movies in the selected genre. 
+             The red point represents your movie's budget and its predicted gross revenue.", size = 3, color = "black")  # Add description
   
 }
 
