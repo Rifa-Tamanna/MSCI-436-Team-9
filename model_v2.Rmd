@@ -352,7 +352,7 @@ plot_budget <- function(genre, input_budget, predicted_value, data = final_movie
     scale_y_log10(labels = scales::dollar_format()) +
     labs(x = "Budget (log scale)", 
          y = "Gross Revenue (log scale)", 
-         title = "Budget vs. Gross Revenue") +
+         title = paste("Budget vs. Gross Revenue of", genre, "Movies")) +
     theme_minimal() +
     annotate("text", x = input_budget, y = predicted_value, fontface = "bold",
              label = "Your Movie", vjust = -1, color = "navyblue") + 
