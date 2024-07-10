@@ -6,10 +6,6 @@ rf_model <- readRDS("rf_model.rds")
 plot_genre <- readRDS("plot_genre.rds")
 plot_rating <- readRDS("plot_rating.rds")
 
-
-
-# Load Data
-
 # Define UI
 
 ui <- fluidPage(
@@ -55,7 +51,6 @@ ui <- fluidPage(
       ),
       
       conditionalPanel(
-
         condition = "input.show_rating == true",
         plotOutput("rating_hist")
       )
