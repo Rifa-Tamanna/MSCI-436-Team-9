@@ -443,14 +443,13 @@ budget_suggestion <- function(input_data){
     new_bin <- cut(new_pred, breaks = bins, labels = labels, include.lowest = TRUE)
     
     if (as.character(new_bin) == next_bin) {
-      print(paste("By increasing your budget by", next_budget - current_budget, "your gross revenue will sit in", next_bin))
-      return(next_budget)
+      # suggestion <- paste("By increasing your budget by", next_budget - current_budget, "your gross revenue will sit in", next_bin)
+      return(paste("By increasing your budget by", next_budget - current_budget, "your gross revenue will sit in the", next_bin, "gross revenue bin. Your total budget would be", next_budget,"."))
     }
   }
   
-  print("Your budget is sufficient to satisfy a gross revenue that sits in the highest bin. No changes need to be made to the buget.")
-  return(current_budget)
-  
+  return(paste("Your budget is sufficient to satisfy a gross revenue that sits in the highest bin. No changes need to be made to the budget."))
+
 }
 
 saveRDS(budget_suggestion, file = "budget_suggestion.rds")
