@@ -407,3 +407,53 @@ saveRDS(plot_rating, "plot_rating.rds")
 plot_rating("R", "High")
 
 ```
+
+``` {R Suggestion}
+test_data <- readRDS("test_data.rds")
+
+print(test_data)
+
+budget_suggestion <- function(input_data){
+  current_budget <- input_data$budget
+  print(current_budget)
+  pred <- predict(rf_model, newdata = input_data)
+  
+  bins <- c(0, 7500000, 25000000, 50000000, 150000000, Inf)
+  labels <- c("Very low", "Low", "Medium", "High", "Very high")
+  bin <- cut(pred, breaks = bins, labels = labels, include.lowest = TRUE)
+  print(paste("This is the", bin))
+  current_index <- which(labels == as.character(bin))
+  
+  if (current_index < length(labels)) {
+    next_bin <- labels[current_index + 1]
+  } else {
+    next_bin <- "No higher bin"
+  }
+  
+  print(next_bin)
+  
+  # Increase budget by 10000 and recheck
+  next_budget <- current_budget
+  max_increase <- 1000000000  # Maximum budget increase
+  
+  while (next_budget <= current_budget + max_increase) {
+    next_budget <- next_budget + 1000
+    input_data$budget <- next_budget
+    new_pred <- predict(rf_model, newdata = input_data)
+    new_bin <- cut(new_pred, breaks = bins, labels = labels, include.lowest = TRUE)
+    
+    if (as.character(new_bin) == next_bin) {
+      print(paste("Budget increased to reach next bin. New budget:", next_budget))
+      return(next_budget)
+    }
+  }
+  
+  print("Could not reach next bin within reasonable budget increase.")
+  return(current_budget)
+  
+}
+
+saveRDS(budget_suggestion, file = "budget_suggestion.rds")
+
+budget_suggestion(test_data)
+```
