@@ -50,25 +50,33 @@ ui <- fluidPage(
       verbatimTextOutput("bin"),
       verbatimTextOutput("suggestions"),
       
+      br(), 
       
-      
-      conditionalPanel(
-        condition = "input.show_budget == true",
-        plotOutput("budget_hist")
+      fluidRow(
+        column(width = 12,
+               conditionalPanel(
+                 condition = "input.show_budget == true",
+                 plotOutput("budget_hist", height = "300px")
+               )
+        )
       ),
       
-      conditionalPanel(
-        condition = "input.show_genre == true",
-        plotOutput("genre_hist")
-      ),
+      tags$div(style = "height: 30px;"),
       
-      
-      conditionalPanel(
-
-        condition = "input.show_rating == true",
-        plotOutput("rating_hist")
-      ),
-      
+      fluidRow(
+        column(width = 6,
+               conditionalPanel(
+                 condition = "input.show_genre == true",
+                 plotOutput("genre_hist", height = "300px")
+               )
+        ),
+        column(width = 6,
+               conditionalPanel(
+                 condition = "input.show_rating == true",
+                 plotOutput("rating_hist", height = "300px")
+               )
+        )
+      )
       
     )
   )
