@@ -75,10 +75,11 @@ server <- function(input, output) {
   
   # Create a reactive expression for rating data
   rating_data <- reactive({
-    ratings <- c("G", "PG", "PG-13", "R")
+    ratings <- c("G", "PG", "PG.13", "R")
     data <- as.data.frame(matrix(0, nrow = 1, ncol = length(ratings)))
     colnames(data) <- paste0("rating", ratings)
     data[, paste0("rating", input$rating)] <- 1
+    print(data)
     return(data)
   })
   
@@ -172,10 +173,12 @@ server <- function(input, output) {
 
   # Rating histogram
   output$rating_hist <- renderPlot({
-    plot_rating(input$rating, predicted_bin())
+    rating <- input$rating
+    if (rating == "PG.13"){
+      rating <- "PG-13"
+    }
+    plot_rating(rating, predicted_bin())
   })
-  
-
   
   output$suggestions <- renderText({
     new_data <- prepare_input()

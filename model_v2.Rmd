@@ -437,7 +437,7 @@ budget_suggestion <- function(input_data){
   max_increase <- 1000000000  # Maximum budget increase
   
   while (next_budget <= current_budget + max_increase) {
-    next_budget <- next_budget + 1000
+    next_budget <- next_budget + 100000
     input_data$budget <- next_budget
     new_pred <- predict(rf_model, newdata = input_data)
     new_bin <- cut(new_pred, breaks = bins, labels = labels, include.lowest = TRUE)
