@@ -11,7 +11,10 @@ plot_rating <- readRDS("plot_rating.rds")
 
 ui <- fluidPage(
   
-  titlePanel("Hit or Flop | Movie Gross Revenue Predictor"),
+  titlePanel(div(
+    h2("Hit or Flop", style = "color: #333; font-weight: bold;"),
+    h3("Movie Gross Revenue Predictor", style = "color: #666;")
+  )),
   
   sidebarLayout(
     sidebarPanel(
@@ -24,6 +27,14 @@ ui <- fluidPage(
       selectInput("genre", "Genre",
                   choices = c("Action","Adventure", "Animation", "Biography", "Comedy", "Crime", "Drama", "Fantasy", "Horror"), 
                   selected = "Action"),
+      
+      tags$head(tags$style(".sidebar-panel {
+                        padding: 5px;
+                        background-color: #f5f5f5;
+                        border: 1px solid #ddd;
+                        border-radius: 2px;
+                        margin-bottom: 10px;
+                      }")),
       
       checkboxInput("show_genre", "Show Genre Histogram", value = TRUE),
       
@@ -42,20 +53,22 @@ ui <- fluidPage(
       
       
       conditionalPanel(
-        condition = "input.show_genre == true",
-        plotOutput("genre_hist")
-      ),
-      
-      conditionalPanel(
         condition = "input.show_budget == true",
         plotOutput("budget_hist")
       ),
       
       conditionalPanel(
+        condition = "input.show_genre == true",
+        plotOutput("genre_hist")
+      ),
+      
+      
+      conditionalPanel(
 
         condition = "input.show_rating == true",
         plotOutput("rating_hist")
-      )
+      ),
+      
       
     )
   )

@@ -326,7 +326,8 @@ plot_genre <- function(genre, predicted_bin, data = final_movieset) {
     labs(title = paste("Histogram of", genre, "Movies"),
          x = "Gross Revenue",
          y = "Count of Movies") +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          plot.title = element_text(size = 20, face = "bold", color = "darkblue")) +
     guides(fill = "none")
 }
 saveRDS(plot_genre, "plot_genre.rds")
@@ -345,7 +346,7 @@ plot_budget <- function(genre, input_budget, predicted_value, data = final_movie
   
   ggplot(genre_data, aes(x = genre_data$budget, y = genre_data$gross)) +
     
-    geom_point(colour = "lightblue",alpha = 0.5) +
+    geom_point(colour = "skyblue",alpha = 0.5) +
     geom_point(data = data.frame(budget = input_budget, gross = predicted_value), 
                aes(x = budget, y = gross), color = "navyblue", size = 3) +
     scale_x_log10(labels = scales::dollar_format()) +
@@ -353,7 +354,7 @@ plot_budget <- function(genre, input_budget, predicted_value, data = final_movie
     labs(x = "Budget (log scale)", 
          y = "Gross Revenue (log scale)", 
          title = paste("Budget vs. Gross Revenue of", genre, "Movies")) +
-    theme_minimal() +
+    theme(plot.title = element_text(size = 20, face = "bold", color = "darkblue")) +
     annotate("text", x = input_budget, y = predicted_value, fontface = "bold",
              label = "Your Movie", vjust = -1, color = "navyblue") + 
     annotate("text", x = min(genre_data$budget), y = max(genre_data$gross), hjust = 0,
@@ -399,7 +400,8 @@ plot_rating <- function(rating, predicted_bin, data = final_movieset) {
     labs(title = paste("Histogram of", rating, "Movies"),
          x = "Gross Revenue",
          y = "Count of Movies") +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          plot.title = element_text(size = 20, face = "bold", color = "darkblue")) +
     guides(fill = "none")
 }
 saveRDS(plot_rating, "plot_rating.rds")
