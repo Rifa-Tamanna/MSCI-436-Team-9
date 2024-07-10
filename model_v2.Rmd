@@ -29,8 +29,7 @@ print(movieset)
 ```
 
 
-## Binning
-
+## Binning Gross Revenue
 ```{r}
 custom_breaks <- c(0, 10000000, 30000000, 90000000, 150000000, Inf)
 bin_labels <- c("Very Low", "Low", "Medium", "High", "Very High")
@@ -46,8 +45,7 @@ barplot(bin_freq,
 
 ```
 
-# Numerical and Categorical Variables
-
+# Visualization of Numerical Variables 
 ```{r numerical plots}
 
 p1 <- ggplot(aes(x=year), data=movieset) + 
@@ -65,26 +63,21 @@ grid.arrange(p1, p2, p3, p4, p5, ncol=2)
 ```
 For the analysis, we will be using year, score, log(votes), log(budget) and runtime. They all have reasonably broad distributions which make them appropriate candidates.
 
+## Correlation Matrix Between Numerical Variables
 ```{r numerical correlation matrix}
 hist(movieset$gross, breaks = 30)
 summary(movieset$gross)
 
+# Defining a data frame with all numerical variables from dataset 
 numeric_columns <- names(movieset)[sapply(movieset, is.numeric)]
 numeric_columns <- setdiff(numeric_columns, "gross")
 numeric_vars <- movieset[, numeric_columns]
 print(names(numeric_vars))
 
-
-#correlation_matrix <- cor(numeric_vars)
-#print(correlation_matrix)
-
-# Assuming numeric_vars is your dataframe with numeric variables
+# Performing correlation test
 correlation_matrix <- cor(numeric_vars)
 
-# Print the correlation matrix (optional)
-print(correlation_matrix)
-
-# Visualize the correlation matrix using corrplot
+# Visualizing the correlation matrix
 corrplot(correlation_matrix, method = "color", type = "upper", 
          order = "hclust", tl.col = "black", tl.srt = 45, 
          addCoef.col = "black", number.cex = 0.7, 
@@ -93,19 +86,18 @@ corrplot(correlation_matrix, method = "color", type = "upper",
 
 As the correlation between all of the numerical variables are relatively low, they can all be used for the prediction analysis. 
 
+## Visualization of Categorical Variables
 ```{r categorical plots}
 
-#Plotting genre to gross frequency
+#Plotting genre against gross frequency
 p1 <- ggplot(aes(x = genre), data = movieset) +
   geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
   ylab('Percentage') +
   ggtitle('Genres') +
   coord_flip()
-
-
 grid.arrange(p1, ncol = 2)
 
-# Create boxplot
+# Creating boxplot for genre vs gross revenue
 boxplot(movieset$gross_equal_width_bins ~ genre, data = movieset,
         main = 'Gross Revenue vs. Genre', 
         xlab = 'Genre', 
@@ -115,17 +107,15 @@ boxplot(movieset$gross_equal_width_bins ~ genre, data = movieset,
         par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
 
 
-#Plotting rating to gross frequency
+#Plotting rating against gross frequency
 p2 <- ggplot(aes(x = rating), data = movieset) +
   geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
   ylab('Percentage') +
   ggtitle('Rating') +
   coord_flip()
-
-
 grid.arrange(p2, ncol = 2)
 
-# Create boxplot
+# Creating boxplot for rating vs gross revenue
 boxplot(movieset$gross_equal_width_bins ~ rating, data = movieset,
         main = 'Gross Revenue vs. Rating', 
         xlab = 'Rating', 
@@ -135,17 +125,15 @@ boxplot(movieset$gross_equal_width_bins ~ rating, data = movieset,
         par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
 
 
-#Plotting country to gross frequency
+#Plotting country against gross frequency
 p3 <- ggplot(aes(x = country), data = movieset) +
   geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
   ylab('Percentage') +
   ggtitle('Country') +
   coord_flip()
-
-
 grid.arrange(p3, ncol = 2)
 
-# Create boxplot
+# Creating boxplot for country vs gross revenue
 boxplot(movieset$gross_equal_width_bins ~ country, data = movieset,
         main = 'Gross Revenue vs. Country', 
         xlab = 'Country', 
@@ -155,44 +143,42 @@ boxplot(movieset$gross_equal_width_bins ~ country, data = movieset,
         par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
 
 
-#Plotting company to gross frequency
+#Plotting company against gross frequency
 p4 <- ggplot(aes(x = company), data = movieset) +
   geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
   ylab('Percentage') +
   ggtitle('Company') +
   coord_flip()
-
 grid.arrange(p4, ncol = 2)
 
-#Plotting director to gross frequency
+
+#Plotting director against gross frequency
 p5 <- ggplot(aes(x = director), data = movieset) +
   geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
   ylab('Percentage') +
   ggtitle('Director') +
   coord_flip()
-
 grid.arrange(p5, ncol = 2)
 
-#Plotting writer to gross frequency
+
+#Plotting writer against gross frequency
 p6 <- ggplot(aes(x = writer), data = movieset) +
   geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
   ylab('Percentage') +
   ggtitle('Writer') +
   coord_flip()
-
 grid.arrange(p6, ncol = 2)
 
-#Plotting star to gross frequency
+
+#Plotting star against gross frequency
 p7 <- ggplot(aes(x = star), data = movieset) +
   geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
   ylab('Percentage') +
   ggtitle('Star') +
   coord_flip()
-
 grid.arrange(p7, ncol = 2)
-
-
 ```
+After plotting all categorical variables against gross frequency, we see that variables "star", "director" and "company" have too much variety which will make it difficult to train the model using these data points. So, we will remove these features from our dataset.
 
 ## Define columns that will be used in the model
 ```{r}
@@ -217,68 +203,65 @@ print(final_movieset)
 
 We will be using genre, rating, and country as prediction variables because gross revenue has a correlation with those three. Due to the high number of unique entries of company, director, writer, and star, we have decided to exclude these variables from our predictive model.
 
-
-## Random Forest Algorithm
+## Determining Feature Importance
 ```{r feature importance}
-# Define the feature matrix and target variable
+
 library(randomForest)
 
+# Transforming categorical variables into a matrix that can be used to determine feature importance 
 x <- final_movieset %>% select(-gross)
 x <- data.frame(model.matrix(~genre + rating - 1, data = x))
+
 x$budget <- final_movieset$budget
 x$runtime <- final_movieset$runtime
 y <- final_movieset$gross
 
-# Train a Random Forest model
+# Training random forest model
 set.seed(42)
 rf_model_importance <- randomForest(x, y, ntree = 100, importance = TRUE)
 
-# Get feature importance
+# Feature importance based on trained model
 importance <- importance(rf_model_importance)
 importance_df <- data.frame(Feature = rownames(importance), Importance = importance[, 1])
 importance_df <- importance_df %>% arrange(desc(Importance))
 print(importance_df)
 
-# Plot feature importance
+# Plotting feature importance
 ggplot(importance_df, aes(x = reorder(Feature, Importance), y = Importance)) +
   geom_bar(stat = "identity") + coord_flip() + ggtitle("Feature Importance")
 
 ```
 
-
+## Implementing Random Forest Algorithm
 ```{r}
 library(randomForest)
 
 library(caret)
 
-# Ensure you have the final_movieset dataset with the same structure as above
+# Defining data set to use for training the model 
 last_movie <- final_movieset %>% select(name, genre, budget, gross, rating, runtime)
-# print(last_movie)
 
-# One-hot encode the genre and rating columns in last_movie
+# Perform one-hot encoding on the categorical variables 
 dummies <- dummyVars(~ genre + rating, data = last_movie)
 x <- data.frame(predict(dummies, newdata = last_movie))
 
-
-# Add remaining numeric columns
 x$budget <- last_movie$budget
 x$runtime <- last_movie$runtime
 y <- last_movie$gross
 
 print(last_movie)
-set.seed(42)  # For reproducibility
-train_indices <- sample(1:nrow(last_movie), 0.8 * nrow(last_movie))  # 80% for training
+
+# Splitting the dataset into a training and testing set
+set.seed(42)
+train_indices <- sample(1:nrow(last_movie), 0.8 * nrow(last_movie))
 X_train <- x[train_indices, ]
 y_train <- y[train_indices]
 X_test <- x[-train_indices, ]
 y_test <- y[-train_indices]
 
-#X_train <- rename(X_train, "ratingPG-13" = "ratingPG.13")
-#X_test <- rename(X_test, "ratingPG-13" = "ratingPG.13")
-
-
 print(X_train)
 print(y_train)
+
 # Train the Random Forest model
 rf_model <- randomForest(x = X_train, y = y_train, ntree = 100, mtry = 3, importance = TRUE)
 saveRDS(rf_model, file = "rf_model.rds")
@@ -289,24 +272,27 @@ y_pred <- predict(rf_model, newdata = X_test)
 print(X_test)
 ```
 
+# Binning Predictions Based on Trained Model
 ```{r binning predictions}
-# Define the bins and labels
+
+# Defining the bins and labels
 bins <- c(0, 7500000, 25000000, 50000000, 150000000, Inf)
 labels <- c("Very low", "Low", "Medium", "High", "Very high")
 
 normal_binned <- cut(last_movie$gross, breaks = bins, labels = labels, right = FALSE)
-# Bin the predictions
+
+# Binning the predictions
 y_pred_binned <- cut(y_pred, breaks = bins, labels = labels, right = FALSE)
 
-# Print the binned predictions
+# Printing the binned predictions
 print(y_pred_binned)
 
 # To compare with actual values
-y_test_binned <- cut(y_test, breaks = bins, labels = labels, right = FALSE)
-print(y_test_binned)
+# y_test_binned <- cut(y_test, breaks = bins, labels = labels, right = FALSE)
+# print(y_test_binned)
 ```
-
-## Calculating the average gross revenue for each genre in the dataset 
+## Calculating the average gross revenue for each genre in the dataset
+# Note: Do we plan on displaying this avg value, otherwise we can remove this block of code
 ```{r}
 avg_gross <- last_movie %>%
   group_by(genre) %>%
@@ -316,25 +302,20 @@ avg_gross <- last_movie %>%
 print(avg_gross)
 ```
 
-## Plotting Graphs For Genre vs Gross Revenue
+## Plotting A Histogram For Genre vs Gross Revenue
 ```{r}
-# Define bins and labels
+# Defining bins and labels
 bins <- c(0, 7500000, 25000000, 50000000, 150000000, Inf)
 labels <- c("Very low", "Low", "Medium", "High", "Very high")
 
-# Prepare the dataset
 final_movieset <- final_movieset %>%
   mutate(normal_binned = cut(gross, breaks = bins, labels = labels, right = FALSE))
 
 plot_genre <- function(genre, predicted_bin, data = final_movieset) {
-  # Filter the data for the specific genre
   genre_data <- data %>% 
     filter(genre == !!genre) %>%
-    
-    # Ensure normal_binned is a factor with all levels
     mutate(normal_binned = factor(normal_binned, levels = c("Very low", "Low", "Medium", "High", "Very high")))
   
-  # Create color vector
   bin_colors <- setNames(rep("grey", 5), c("Very low", "Low", "Medium", "High", "Very high"))
   bin_colors[predicted_bin] <- "blue"
   
@@ -350,31 +331,20 @@ plot_genre <- function(genre, predicted_bin, data = final_movieset) {
 }
 saveRDS(plot_genre, "plot_genre.rds")
 
-# Now you can call the function like this:
+# Testing the function
 plot_genre("Horror", "High")
 
 ```
 
 # Create a Scatter Plot of Budget vs. Gross Revenue
 ```{r}
-genre <- "Action"
-genre_data <- final_movieset %>% 
-    filter(genre == !!genre) %>%
-    # Ensure normal_binned is a factor with all levels
-    mutate(normal_binned = factor(normal_binned, levels = c("Very low", "Low", "Medium", "High", "Very high")))
-
-print(genre_data)
-
 plot_budget <- function(genre, input_budget, predicted_value, data = final_moviese){
-  # Filter the data for the specific genre
   genre_data <- final_movieset %>% 
       filter(genre == !!genre) %>%
-      # Ensure normal_binned is a factor with all levels
       mutate(normal_binned = factor(normal_binned, levels = c("Very low", "Low", "Medium", "High", "Very high")))
   
   ggplot(genre_data, aes(x = genre_data$budget, y = genre_data$gross)) +
     geom_point(alpha = 0.5) +
-    #geom_smooth(method = "lm", color = "red", se = FALSE) +
     geom_point(data = data.frame(budget = input_budget, gross = predicted_value), 
                aes(x = budget, y = gross), color = "red", size = 5) +
     scale_x_log10(labels = scales::dollar_format()) +
@@ -390,14 +360,14 @@ plot_budget <- function(genre, input_budget, predicted_value, data = final_movie
 
 saveRDS(plot_budget, "plot_budget.RDS")
 
+# Testing the function
 plot_budget("Drama",500000,416018442)
 
 ```
-
-
+## Plotting A Histogram For Rating vs Gross Revenue
 ```{r}
 
-# Define bins and labels
+# Defining bins and labels
 bins <- c(0, 7500000, 25000000, 50000000, 150000000, Inf)
 labels <- c("Very low", "Low", "Medium", "High", "Very high")
 
@@ -428,7 +398,8 @@ plot_rating <- function(rating, predicted_bin, data = final_movieset) {
     guides(fill = "none")
 }
 saveRDS(plot_rating, "plot_rating.rds")
-# Now you can call the function like this:
+
+# Testing the function
 plot_rating("R", "High")
 
 ```

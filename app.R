@@ -219,9 +219,9 @@ server <- function(input, output) {
       ), next_bin)
       # Format the suggestions as a single string
       suggestion_text <- paste("Suggestions to move to the", next_bin, "bin:\n",
-                               "- Budget: ", suggestions$budget, "\n",
-                               "- Rating: ", suggestions$rating, "\n",
-                               "- Runtime: ", suggestions$runtime, "\n")
+                               "Budget: ", suggestions$budget, "\n",
+                               "Rating: ", suggestions$rating, "\n",
+                               "Runtime: ", suggestions$runtime, "\n")
       return(suggestion_text)
     }
     
