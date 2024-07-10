@@ -458,7 +458,6 @@ saveRDS(budget_suggestion, file = "budget_suggestion.rds")
 
 budget_suggestion(test_data)
 ```
-
 ``` {R Runtime}
 test_data <- readRDS("test_data.rds")
 
@@ -468,34 +467,34 @@ runtime_suggestion <- function(input_data){
   original_runtime <- input_data$runtime
   current_runtime <- 0
   pred <- predict(rf_model, newdata = input_data)
-  
+
   bins <- c(0, 7500000, 25000000, 50000000, 150000000, Inf)
   labels <- c("Very low", "Low", "Medium", "High", "Very high")
   bin <- cut(pred, breaks = bins, labels = labels, include.lowest = TRUE)
 
   current_index <- which(labels == as.character(bin))
-  
+
   if (current_index < length(labels)) {
     next_bin <- labels[current_index + 1]
   } else {
-    return(paste("No higher bin")) 
+    next_bin <- "No higher bin"
   }
 
   next_runtime <- current_runtime
   max_increase <- 240  # Maximum runtime increase
-  
+
   while (next_runtime <= current_runtime + max_increase) {
-    next_runtime <- next_runtime + 1
+    next_runtime <- next_runtime + 5
     input_data$runtime <- next_runtime
     new_pred <- predict(rf_model, newdata = input_data)
     new_bin <- cut(new_pred, breaks = bins, labels = labels, include.lowest = TRUE)
-    
+
     if (as.character(new_bin) == next_bin) {
       # suggestion <- paste("By increasing your runtime by", next_runtime - current_runtime, "your gross revenue will sit in", next_bin)
       return(paste("By increasing your runtime by", next_runtime - original_runtime, "minutes, your gross revenue will sit in the", next_bin, "gross revenue bin. Your total runtime would be", next_runtime,"."))
     }
   }
-  
+
   return(paste("Your runtime is sufficient to satisfy a gross revenue that sits in the highest bin. No changes need to be made to the runtime."))
 
 }

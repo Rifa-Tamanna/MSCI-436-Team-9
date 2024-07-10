@@ -48,7 +48,8 @@ ui <- fluidPage(
       h3("Predicted Movie Success:"),
       verbatimTextOutput("prediction"),
       verbatimTextOutput("bin"),
-      verbatimTextOutput("suggestions"),
+      verbatimTextOutput("suggestions_budget"),
+      verbatimTextOutput("suggestions_runtime"),
       
       br(), 
       
@@ -201,9 +202,14 @@ server <- function(input, output) {
     plot_rating(rating, predicted_bin())
   })
   
-  output$suggestions <- renderText({
+  output$suggestions_budget <- renderText({
     new_data <- prepare_input()
     budget_suggestion(new_data)
+  })
+  
+  output$suggestions_runtime <- renderText({
+    new_data <- prepare_input()
+    runtime_suggestion(new_data)
   })
 }
 
