@@ -368,6 +368,7 @@ saveRDS(plot_budget, "plot_budget.RDS")
 plot_budget("Drama",20000000,116018442)
 
 ```
+
 ## Plotting A Histogram For Rating vs Gross Revenue
 ```{r}
 
@@ -415,13 +416,13 @@ print(test_data)
 
 budget_suggestion <- function(input_data){
   current_budget <- input_data$budget
-  print(current_budget)
+  # print(current_budget)
   pred <- predict(rf_model, newdata = input_data)
   
   bins <- c(0, 7500000, 25000000, 50000000, 150000000, Inf)
   labels <- c("Very low", "Low", "Medium", "High", "Very high")
   bin <- cut(pred, breaks = bins, labels = labels, include.lowest = TRUE)
-  print(paste("This is the", bin))
+  # print(paste("This is the", bin))
   current_index <- which(labels == as.character(bin))
   
   if (current_index < length(labels)) {
@@ -429,26 +430,25 @@ budget_suggestion <- function(input_data){
   } else {
     next_bin <- "No higher bin"
   }
-  
-  print(next_bin)
+  # print(next_bin)
   
   # Increase budget by 10000 and recheck
   next_budget <- current_budget
   max_increase <- 1000000000  # Maximum budget increase
   
   while (next_budget <= current_budget + max_increase) {
-    next_budget <- next_budget + 1000
+    next_budget <- next_budget + 100000
     input_data$budget <- next_budget
     new_pred <- predict(rf_model, newdata = input_data)
     new_bin <- cut(new_pred, breaks = bins, labels = labels, include.lowest = TRUE)
     
     if (as.character(new_bin) == next_bin) {
-      print(paste("Budget increased to reach next bin. New budget:", next_budget))
+      print(paste("By increasing your budget by", next_budget - current_budget, "your gross revenue will sit in", next_bin))
       return(next_budget)
     }
   }
   
-  print("Could not reach next bin within reasonable budget increase.")
+  print("Your budget is sufficient to satisfy a gross revenue that sits in the highest bin. No changes need to be made to the buget.")
   return(current_budget)
   
 }
