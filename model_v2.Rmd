@@ -19,7 +19,7 @@ library(gridExtra)
 library(corrplot)
 library(tidyr)
 library(caret)
-
+library(scales)
 ```
 
 ## Dataset 
@@ -345,22 +345,19 @@ plot_budget <- function(genre, input_budget, predicted_value, data = final_movie
       mutate(normal_binned = factor(normal_binned, levels = c("Very low", "Low", "Medium", "High", "Very high")))
   
   ggplot(genre_data, aes(x = genre_data$budget, y = genre_data$gross)) +
-    
-    geom_point(colour = "skyblue",alpha = 0.5) +
+    geom_point(colour = "skyblue", alpha = 0.5) +
     geom_point(data = data.frame(budget = input_budget, gross = predicted_value), 
                aes(x = budget, y = gross), color = "navyblue", size = 3) +
     scale_x_log10(labels = scales::dollar_format()) +
     scale_y_log10(labels = scales::dollar_format()) +
     labs(x = "Budget (log scale)", 
          y = "Gross Revenue (log scale)", 
-         title = paste("Budget vs. Gross Revenue of", genre, "Movies")) +
-    theme(plot.title = element_text(size = 20, face = "bold", color = "darkblue")) +
+         title = paste("Budget vs. Gross Revenue of", genre, "Movies"),
+         subtitle = "This graph shows the relationship between budget and gross revenue for movies in the selected genre.\nThe blue point represents your movie's budget and its predicted gross revenue.") +
+    theme(plot.title = element_text(size = 20, face = "bold", color = "darkblue"),
+          plot.subtitle = element_text(size = 10, color = "black", margin = margin(b = 20))) +
     annotate("text", x = input_budget, y = predicted_value, fontface = "bold",
-             label = "Your Movie", vjust = -1, color = "navyblue") + 
-    annotate("text", x = min(genre_data$budget), y = max(genre_data$gross), hjust = 0,
-             label = "This graph shows the relationship between budget and gross revenue for movies in the selected genre. 
-             The red point represents your movie's budget and its predicted gross revenue.", size = 3, color = "black")  # Add description
-  
+             label = "Your Movie", vjust = -1, color = "navyblue")
 }
 
 saveRDS(plot_budget, "plot_budget.RDS")
@@ -446,7 +443,7 @@ budget_suggestion <- function(input_data){
     
     if (as.character(new_bin) == next_bin) {
       # suggestion <- paste("By increasing your budget by", next_budget - current_budget, "your gross revenue will sit in", next_bin)
-      return(paste("By increasing your budget by", next_budget - current_budget, "your gross revenue will sit in the", next_bin, "gross revenue bin. Your total budget would be", next_budget,"."))
+      return(paste("By increasing your budget by", dollar(next_budget - current_budget), "your gross revenue will sit in the", next_bin, "gross revenue bin. Your total budget would be", dollar(next_budget),"."))
     }
   }
   
@@ -458,6 +455,11 @@ saveRDS(budget_suggestion, file = "budget_suggestion.rds")
 
 budget_suggestion(test_data)
 ```
+
+
+
+
+
 ``` {R Runtime}
 test_data <- readRDS("test_data.rds")
 

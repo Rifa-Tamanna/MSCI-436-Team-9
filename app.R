@@ -10,6 +10,32 @@ plot_rating <- readRDS("plot_rating.rds")
 # Define UI
 
 ui <- fluidPage(
+  tags$head(
+    tags$style(HTML("
+      .output-box {
+        background-color: #f8f8f8;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+      .output-title {
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+      }
+      .output-content pre {
+        font-family: 'Arial';
+        white-space: normal;
+        word-wrap: normal;
+        background-color: transparent;
+        border: none;
+        word-break: keep-all;
+        overflow-wrap: normal;
+        overflow: hidden;
+      }
+    "))
+  ),
   
   titlePanel(div(
     h2("Hit or Flop", style = "color: #333; font-weight: bold;"),
@@ -20,7 +46,7 @@ ui <- fluidPage(
     sidebarPanel(
       numericInput("runtime", "Movie Runtime (in minutes)", value = 120, min = 1),
       
-      numericInput("budget", "Movie Budget (in $)", value = 50000000, min = 1),
+      numericInput("budget", "Movie Budget (in $1000)", value = 50000, min = 1),
       
       selectInput("rating", "Movie Rating", choices = c("G", "PG", "PG-13"="PG.13", "R"), selected = "G"),
       
@@ -45,11 +71,19 @@ ui <- fluidPage(
     ),
     
     mainPanel(
-      h3("Predicted Movie Success:"),
-      verbatimTextOutput("prediction"),
-      verbatimTextOutput("bin"),
-      verbatimTextOutput("suggestions_budget"),
-      verbatimTextOutput("suggestions_runtime"),
+        h3("Predicted Movie Success:"),
+        
+        div(class = "output-box",
+            div(class = "output-title", "Prediction"),
+            div(class = "output-content", verbatimTextOutput("prediction")),
+            div(class = "output-content", verbatimTextOutput("bin")),
+            div(class = "output-title", "Budget Suggestions"),
+            div(class = "output-content", verbatimTextOutput("suggestions_budget")),
+            div(class = "output-title", "Runtime Suggestions"),
+            div(class = "output-content", verbatimTextOutput("suggestions_runtime"))
+            
+        ),
+        
       
       br(), 
       
@@ -113,7 +147,7 @@ server <- function(input, output) {
     new_data <- data.frame(
       name = "prediction",
       runtime = input$runtime,
-      budget = input$budget,
+      budget = input$budget *1000,
       genre_df,
       rating_df
     )
@@ -187,9 +221,9 @@ server <- function(input, output) {
     pred <- prediction()
     if (is.na(pred)) {
       # Handle the case when prediction fails
-      plot_budget(input$genre, input$budget, NA)
+      plot_budget(input$genre, input$budget*1000, NA)
     } else {
-      plot_budget(input$genre, input$budget, pred)
+      plot_budget(input$genre, input$budget*1000, pred)
     }
   })
 
