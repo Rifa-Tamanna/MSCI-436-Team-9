@@ -339,12 +339,12 @@ plot_genre("Horror", "High")
 
 # Create a Scatter Plot of Budget vs. Gross Revenue
 ```{r}
-plot_budget <- function(genre, input_budget, predicted_value, data = final_moviese){
-  genre_data <- final_movieset %>% 
-      filter(genre == !!genre) %>%
-      mutate(normal_binned = factor(normal_binned, levels = c("Very low", "Low", "Medium", "High", "Very high")))
+plot_budget <- function(genre, input_budget, predicted_value, data = final_movieset) {
+  genre_data <- data %>% 
+    filter(genre == !!genre) %>%
+    mutate(normal_binned = factor(normal_binned, levels = c("Very low", "Low", "Medium", "High", "Very high")))
   
-  ggplot(genre_data, aes(x = genre_data$budget, y = genre_data$gross)) +
+  ggplot(genre_data, aes(x = budget, y = gross)) +
     geom_point(colour = "skyblue", alpha = 0.5) +
     geom_point(data = data.frame(budget = input_budget, gross = predicted_value), 
                aes(x = budget, y = gross), color = "navyblue", size = 3) +
@@ -355,7 +355,7 @@ plot_budget <- function(genre, input_budget, predicted_value, data = final_movie
          title = paste("Budget vs. Gross Revenue of", genre, "Movies"),
          subtitle = "This graph shows the relationship between budget and gross revenue for movies in the selected genre.\nThe blue point represents your movie's budget and its predicted gross revenue.") +
     theme(plot.title = element_text(size = 20, face = "bold", color = "darkblue"),
-          plot.subtitle = element_text(size = 14, color = "black", margin = margin(b = 20))) +
+          plot.subtitle = element_text(size = 14, color = "black")) +
     annotate("text", x = input_budget, y = predicted_value, fontface = "bold",
              label = "Your Movie", vjust = -1, color = "navyblue")
 }
@@ -363,7 +363,8 @@ plot_budget <- function(genre, input_budget, predicted_value, data = final_movie
 saveRDS(plot_budget, "plot_budget.RDS")
 
 # Testing the function
-plot_budget("Drama",20000000,116018442)
+plot_budget("Drama", 20000000, 116018442)
+
 
 ```
 
