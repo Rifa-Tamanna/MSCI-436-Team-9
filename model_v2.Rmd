@@ -14,7 +14,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)   
 library(readr)  
 library(ggplot2)
-#library(statsr)
 library(gridExtra)
 library(corrplot)
 library(tidyr)
@@ -31,13 +30,17 @@ print(movieset)
 
 ## Binning Gross Revenue
 ```{r}
-custom_breaks <- c(0, 10000000, 30000000, 90000000, 150000000, Inf)
+# Visualizing the frequency of movies in each bin
+
+# Create bins
+custom_breaks <- c(0, 7500000, 25000000, 50000000, 150000000, Inf)
 bin_labels <- c("Very Low", "Low", "Medium", "High", "Very High")
 
 movieset$gross_equal_width_bins <- cut(movieset$gross, breaks = custom_breaks, labels = bin_labels, include.lowest = TRUE, right = FALSE)
 
 bin_freq <- table(movieset$gross_equal_width_bins)
 
+# Plot frequencies 
 barplot(bin_freq, 
      main = "Frequency of Gross Revenue Bins",
      xlab = "Bins",
@@ -47,6 +50,7 @@ barplot(bin_freq,
 
 # Visualization of Numerical Variables 
 ```{r numerical plots}
+# Looking at the distributions of all numeric variables in the dataset to figure out which ones to include as features in our model
 
 p1 <- ggplot(aes(x=year), data=movieset) + 
   geom_histogram(aes(y=100*(..count..)/sum(..count..)), color='black', fill='white') + ylab('percentage') + ggtitle('year')
@@ -68,7 +72,7 @@ For the analysis, we will be using year, score, log(votes), log(budget) and runt
 hist(movieset$gross, breaks = 30)
 summary(movieset$gross)
 
-# Defining a data frame with all numerical variables from dataset 
+# Defining a data frame with all numerical variables from dataset
 numeric_columns <- names(movieset)[sapply(movieset, is.numeric)]
 numeric_columns <- setdiff(numeric_columns, "gross")
 numeric_vars <- movieset[, numeric_columns]
@@ -77,7 +81,7 @@ print(names(numeric_vars))
 # Performing correlation test
 correlation_matrix <- cor(numeric_vars)
 
-# Visualizing the correlation matrix
+# Visualizing the results of the correlation matrix
 corrplot(correlation_matrix, method = "color", type = "upper", 
          order = "hclust", tl.col = "black", tl.srt = 45, 
          addCoef.col = "black", number.cex = 0.7, 
@@ -89,7 +93,7 @@ As the correlation between all of the numerical variables are relatively low, th
 ## Visualization of Categorical Variables
 ```{r categorical plots}
 
-#Plotting genre against gross frequency
+# Plotting genre against gross frequency
 p1 <- ggplot(aes(x = genre), data = movieset) +
   geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
   ylab('Percentage') +
@@ -102,12 +106,12 @@ boxplot(movieset$gross_equal_width_bins ~ genre, data = movieset,
         main = 'Gross Revenue vs. Genre', 
         xlab = 'Genre', 
         ylab = 'Gross Revenue',
-        las = 2,   # Rotate x-axis labels to be vertical
-        cex.axis = 0.8, # Reduce the font size of axis labels
-        par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
+        las = 2,   
+        cex.axis = 0.8, 
+        par(mar = c(10, 5, 4, 2) + 0.1)) 
 
 
-#Plotting rating against gross frequency
+# Plotting rating against gross frequency
 p2 <- ggplot(aes(x = rating), data = movieset) +
   geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
   ylab('Percentage') +
@@ -120,12 +124,12 @@ boxplot(movieset$gross_equal_width_bins ~ rating, data = movieset,
         main = 'Gross Revenue vs. Rating', 
         xlab = 'Rating', 
         ylab = 'Gross Revenue',
-        las = 2,   # Rotate x-axis labels to be vertical
-        cex.axis = 0.8, # Reduce the font size of axis labels
-        par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
+        las = 2,  
+        cex.axis = 0.8, 
+        par(mar = c(10, 5, 4, 2) + 0.1))
 
 
-#Plotting country against gross frequency
+# Plotting country against gross frequency
 p3 <- ggplot(aes(x = country), data = movieset) +
   geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
   ylab('Percentage') +
@@ -138,12 +142,12 @@ boxplot(movieset$gross_equal_width_bins ~ country, data = movieset,
         main = 'Gross Revenue vs. Country', 
         xlab = 'Country', 
         ylab = 'Gross Revenue',
-        las = 2,   # Rotate x-axis labels to be vertical
-        cex.axis = 0.8, # Reduce the font size of axis labels
-        par(mar = c(10, 5, 4, 2) + 0.1)) # Increase the bottom margin
+        las = 2,   
+        cex.axis = 0.8, 
+        par(mar = c(10, 5, 4, 2) + 0.1)) 
 
 
-#Plotting company against gross frequency
+# Plotting company against gross frequency
 p4 <- ggplot(aes(x = company), data = movieset) +
   geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
   ylab('Percentage') +
@@ -152,7 +156,7 @@ p4 <- ggplot(aes(x = company), data = movieset) +
 grid.arrange(p4, ncol = 2)
 
 
-#Plotting director against gross frequency
+# Plotting director against gross frequency
 p5 <- ggplot(aes(x = director), data = movieset) +
   geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
   ylab('Percentage') +
@@ -161,7 +165,7 @@ p5 <- ggplot(aes(x = director), data = movieset) +
 grid.arrange(p5, ncol = 2)
 
 
-#Plotting writer against gross frequency
+# Plotting writer against gross frequency
 p6 <- ggplot(aes(x = writer), data = movieset) +
   geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
   ylab('Percentage') +
@@ -170,7 +174,7 @@ p6 <- ggplot(aes(x = writer), data = movieset) +
 grid.arrange(p6, ncol = 2)
 
 
-#Plotting star against gross frequency
+# Plotting star against gross frequency
 p7 <- ggplot(aes(x = star), data = movieset) +
   geom_bar(aes(y = 100 * (..count..) / sum(..count..)), fill = "skyblue", color = "black") +
   ylab('Percentage') +
@@ -178,7 +182,7 @@ p7 <- ggplot(aes(x = star), data = movieset) +
   coord_flip()
 grid.arrange(p7, ncol = 2)
 ```
-After plotting all categorical variables against gross frequency, we see that variables "star", "director" and "company" have too much variety which will make it difficult to train the model using these data points. So, we will remove these features from our dataset.
+After plotting all categorical variables against gross frequency, we see that variables "star", "director" and "company" have too much variety which will make it difficult to train the model using these data points. So, we will remove these columns from our dataset.
 
 ## Define columns that will be used in the model
 ```{r}
@@ -201,7 +205,7 @@ final_movieset <- subset(final_movieset, rating != "Not Rated")
 print(final_movieset)
 ```
 
-We will be using genre, rating, and country as prediction variables because gross revenue has a correlation with those three. Due to the high number of unique entries of company, director, writer, and star, we have decided to exclude these variables from our predictive model.
+We will be using genre, rating, and country as prediction variables because gross revenue has a correlation with those three. Due to the high number of unique entries of company, director, writer, and star, we have decided to exclude these variables from our predictive model. We also excluded specific genres and ratings that had a low frequency since there was not enough movies with these attributes to train the model on. 
 
 ## Determining Feature Importance
 ```{r feature importance}
@@ -241,7 +245,7 @@ library(caret)
 # Defining data set to use for training the model 
 last_movie <- final_movieset %>% select(name, genre, budget, gross, rating, runtime)
 
-# Perform one-hot encoding on the categorical variables 
+# One-hot encoding on the categorical variables 
 dummies <- dummyVars(~ genre + rating, data = last_movie)
 x <- data.frame(predict(dummies, newdata = last_movie))
 
@@ -262,7 +266,7 @@ y_test <- y[-train_indices]
 print(X_train)
 print(y_train)
 
-# Train the Random Forest model
+# Train the model
 rf_model <- randomForest(x = X_train, y = y_train, ntree = 100, mtry = 3, importance = TRUE)
 saveRDS(rf_model, file = "rf_model.rds")
 
@@ -287,19 +291,6 @@ y_pred_binned <- cut(y_pred, breaks = bins, labels = labels, right = FALSE)
 # Printing the binned predictions
 print(y_pred_binned)
 
-# To compare with actual values
-# y_test_binned <- cut(y_test, breaks = bins, labels = labels, right = FALSE)
-# print(y_test_binned)
-```
-## Calculating the average gross revenue for each genre in the dataset
-# Note: Do we plan on displaying this avg value, otherwise we can remove this block of code
-```{r}
-avg_gross <- last_movie %>%
-  group_by(genre) %>%
-  summarise(avg_gross = mean(gross, na.rm = TRUE))
-
-# Print or view avg_gross to see the averages calculated
-print(avg_gross)
 ```
 
 ## Plotting A Histogram For Genre vs Gross Revenue
@@ -332,7 +323,7 @@ plot_genre <- function(genre, predicted_bin, data = final_movieset) {
 }
 saveRDS(plot_genre, "plot_genre.rds")
 
-# Testing the function
+# Testing function
 plot_genre("Horror", "High")
 
 ```
@@ -362,7 +353,7 @@ plot_budget <- function(genre, input_budget, predicted_value, data = final_movie
 
 saveRDS(plot_budget, "plot_budget.RDS")
 
-# Testing the function
+# Testing function
 plot_budget("Drama", 20000000, 116018442)
 
 
@@ -375,66 +366,67 @@ plot_budget("Drama", 20000000, 116018442)
 bins <- c(0, 7500000, 25000000, 50000000, 150000000, Inf)
 labels <- c("Very low", "Low", "Medium", "High", "Very high")
 
-# Prepare the dataset
+# Call the dataset
 final_movieset <- final_movieset %>%
   mutate(normal_binned = cut(gross, breaks = bins, labels = labels, right = FALSE))
 
+# Filter data for the specific genre and plot
 plot_rating <- function(rating, predicted_bin, data = final_movieset) {
-  # Filter the data for the specific genre
   rating_data <- data %>% 
     filter(rating == !!rating) %>%
-    # Ensure normal_binned is a factor with all levels
     mutate(normal_binned = factor(normal_binned, levels = c("Very low", "Low", "Medium", "High", "Very high")))
 
-  # Create color vector
-  bin_colors <- setNames(rep("grey", 5), c("Very low", "Low", "Medium", "High", "Very high"))
-  bin_colors[predicted_bin] <- "navyblue"
+# Changed color of bars
+bin_colors <- setNames(rep("grey", 5), c("Very low", "Low", "Medium", "High", "Very high"))
+bin_colors[predicted_bin] <- "navyblue"
 
 
-  # Create the plot
-  ggplot(rating_data, aes(x = normal_binned, fill = normal_binned)) +
-    geom_bar() +
-    scale_fill_manual(values = bin_colors) +
-    labs(title = paste("Histogram of", rating, "Movies"),
-         x = "Gross Revenue",
-         y = "Count of Movies") +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1),
-          plot.title = element_text(size = 20, face = "bold", color = "darkblue")) +
-    guides(fill = "none")
+# Create the plot
+ggplot(rating_data, aes(x = normal_binned, fill = normal_binned)) +
+  geom_bar() +
+  scale_fill_manual(values = bin_colors) +
+  labs(title = paste("Histogram of", rating, "Movies"),
+        x = "Gross Revenue",
+        y = "Count of Movies") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(size = 20, face = "bold", color = "darkblue")) +
+  guides(fill = "none")
 }
 saveRDS(plot_rating, "plot_rating.rds")
 
-# Testing the function
+# Testing function
 plot_rating("R", "High")
 
 ```
 
 ``` {R Suggestion}
+# Created a new function to suggest a budget cost that would return a predicted gross revenue value that falls into the next bin. 
+
 test_data <- readRDS("test_data.rds")
 
 print(test_data)
 
 budget_suggestion <- function(input_data){
   current_budget <- input_data$budget
-  # print(current_budget)
   pred <- predict(rf_model, newdata = input_data)
   
   bins <- c(0, 7500000, 25000000, 50000000, 150000000, Inf)
   labels <- c("Very low", "Low", "Medium", "High", "Very high")
   bin <- cut(pred, breaks = bins, labels = labels, include.lowest = TRUE)
-  # print(paste("This is the", bin))
   current_index <- which(labels == as.character(bin))
+  
   
   if (current_index < length(labels)) {
     next_bin <- labels[current_index + 1]
   } else {
     next_bin <- "No higher bin"
   }
-  # print(next_bin)
-  
+
   # Increase budget by 10000 and recheck
   next_budget <- current_budget
-  max_increase <- 1000000000  # Maximum budget increase
+  max_increase <- 1000000000
+  
+  # Recursively adds $100,000 to the current budget and re-predicts the model based on that value, until a new budget is reached that satisfies the next gross revenue bin.
   
   while (next_budget <= current_budget + max_increase) {
     next_budget <- next_budget + 100000
@@ -443,7 +435,6 @@ budget_suggestion <- function(input_data){
     new_bin <- cut(new_pred, breaks = bins, labels = labels, include.lowest = TRUE)
     
     if (as.character(new_bin) == next_bin) {
-      # suggestion <- paste("By increasing your budget by", next_budget - current_budget, "your gross revenue will sit in", next_bin)
       return(paste("By increasing your budget by", dollar(next_budget - current_budget), "your gross revenue will sit in the", next_bin, "gross revenue bin. Your total budget would be", dollar(next_budget),"."))
     }
   }
@@ -458,13 +449,13 @@ budget_suggestion(test_data)
 ```
 
 
-
-
-
 ``` {R Runtime}
+
 test_data <- readRDS("test_data.rds")
 
 print(test_data)
+
+# Created a new function to suggest an increase in run time that would return a predicted gross revenue value that falls into the next bin. 
 
 runtime_suggestion <- function(input_data){
   original_runtime <- input_data$runtime
@@ -484,7 +475,9 @@ runtime_suggestion <- function(input_data){
   }
 
   next_runtime <- current_runtime
-  max_increase <- 240  # Maximum runtime increase
+  max_increase <- 240  
+
+    # Recursively adds 5 minutes to the current run time and re-predicts the model based on that value, until a new run time is reached that satisfies the next gross revenue bin.
 
   while (next_runtime <= current_runtime + max_increase) {
     next_runtime <- next_runtime + 5
@@ -493,7 +486,6 @@ runtime_suggestion <- function(input_data){
     new_bin <- cut(new_pred, breaks = bins, labels = labels, include.lowest = TRUE)
 
     if (as.character(new_bin) == next_bin) {
-      # suggestion <- paste("By increasing your runtime by", next_runtime - current_runtime, "your gross revenue will sit in", next_bin)
       return(paste("By increasing your runtime by", next_runtime - original_runtime, "minutes, your gross revenue will sit in the", next_bin, "gross revenue bin. Your total runtime would be", next_runtime,"."))
     }
   }
