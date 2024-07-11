@@ -1,14 +1,13 @@
 library(shiny)
 library(randomForest)
 
-# Load Model 
+# Loading the model  
 rf_model <- readRDS("rf_model.rds")
 plot_genre <- readRDS("plot_genre.rds")
 plot_rating <- readRDS("plot_rating.rds")
 
 
-# Define UI
-
+# Defining the UI components
 ui <- fluidPage(
   tags$head(
     tags$style(HTML("
@@ -37,11 +36,13 @@ ui <- fluidPage(
     "))
   ),
   
+  # UI for title
   titlePanel(div(
     h2("Hit or Flop", style = "color: #333; font-weight: bold;"),
     h3("Movie Gross Revenue Predictor", style = "color: #666;")
   )),
   
+  # UI for sidebar
   sidebarLayout(
     sidebarPanel(
       numericInput("runtime", "Movie Runtime (in minutes)", value = 120, min = 1),
@@ -70,6 +71,7 @@ ui <- fluidPage(
 
     ),
     
+    # UI for prediction, suggestions, and graphs
     mainPanel(
         h3("Predicted Movie Success:"),
         
@@ -81,12 +83,10 @@ ui <- fluidPage(
             div(class = "output-content", verbatimTextOutput("suggestions_budget")),
             div(class = "output-title", "Runtime Suggestions"),
             div(class = "output-content", verbatimTextOutput("suggestions_runtime"))
-            
         ),
         
-      
       br(), 
-      
+  
       fluidRow(
         column(width = 12,
                conditionalPanel(
@@ -117,10 +117,10 @@ ui <- fluidPage(
   )
 )
 
-# Define Server
+# Defining the server
 server <- function(input, output) {
   
-  # Create a reactive expression for genre data
+  # Expression for genre data 
   genre_data <- reactive({
     genres <- c("Action", "Adventure", "Animation", "Biography", "Comedy", "Crime", "Drama", "Fantasy", "Horror")
     data <- as.data.frame(matrix(0, nrow = 1, ncol = length(genres)))
@@ -129,7 +129,7 @@ server <- function(input, output) {
     return(data)
   })
   
-  # Create a reactive expression for rating data
+  # Expression for rating data
   rating_data <- reactive({
     ratings <- c("G", "PG", "PG.13", "R")
     data <- as.data.frame(matrix(0, nrow = 1, ncol = length(ratings)))
@@ -152,17 +152,16 @@ server <- function(input, output) {
       rating_df
     )
     
-    
     saveRDS(new_data, file = "test_data.rds")
     print(new_data$budget)
-    # Print the structure of new_data
+    
     print(str(new_data))
     
     return(new_data)
   })
   
 
-  # Make prediction (as a reactive expression)
+  # Make prediction 
   prediction <- reactive({
     new_data <- prepare_input()
     tryCatch({
@@ -184,7 +183,7 @@ server <- function(input, output) {
     }
   })
   
-  # Find the bin 
+  # Finding the bin 
   output$bin <- renderText({
     pred <- prediction()
     if (is.na(pred)) {
@@ -198,8 +197,7 @@ server <- function(input, output) {
   })
   
 
-  
-  # Find the bin
+  # Finding the bin
   predicted_bin <- reactive({
     pred <- prediction()
     if (is.na(pred)) {
@@ -211,23 +209,22 @@ server <- function(input, output) {
     }
   })
   
-  # Genre histogram
+  # Outputting genre histogram
   output$genre_hist <- renderPlot({
     plot_genre(input$genre, predicted_bin())
   })
   
-  # Budget scatterplot
+  # Outputting budget scatterplot
   output$budget_hist <- renderPlot({
     pred <- prediction()
     if (is.na(pred)) {
-      # Handle the case when prediction fails
       plot_budget(input$genre, input$budget*1000, NA)
     } else {
       plot_budget(input$genre, input$budget*1000, pred)
     }
   })
 
-  # Rating histogram
+  # Outputting rating histogram
   output$rating_hist <- renderPlot({
     rating <- input$rating
     if (rating == "PG.13"){
