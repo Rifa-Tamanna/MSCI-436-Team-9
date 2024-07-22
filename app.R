@@ -2,9 +2,9 @@ library(shiny)
 library(randomForest)
 
 # Loading the model  
-rf_model <- readRDS("rf_model.rds")
-plot_genre <- readRDS("plot_genre.rds")
-plot_rating <- readRDS("plot_rating.rds")
+rf_model <- readRDS("rds_files/rf_model.rds")
+plot_genre <- readRDS("rds_files/plot_genre.rds")
+plot_rating <- readRDS("rds_files/plot_rating.rds")
 
 
 # Defining the UI components
@@ -152,7 +152,7 @@ server <- function(input, output) {
       rating_df
     )
     
-    saveRDS(new_data, file = "test_data.rds")
+    saveRDS(new_data, file = "rds_files/test_data.rds")
     print(new_data$budget)
     
     print(str(new_data))

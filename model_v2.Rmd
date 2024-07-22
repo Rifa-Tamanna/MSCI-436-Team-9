@@ -268,7 +268,7 @@ print(y_train)
 
 # Train the model
 rf_model <- randomForest(x = X_train, y = y_train, ntree = 100, mtry = 3, importance = TRUE)
-saveRDS(rf_model, file = "rf_model.rds")
+saveRDS(rf_model, file = "rds_files/rf_model.rds")
 
 # Predict on the test set
 y_pred <- predict(rf_model, newdata = X_test)
@@ -321,7 +321,7 @@ plot_genre <- function(genre, predicted_bin, data = final_movieset) {
           plot.title = element_text(size = 20, face = "bold", color = "darkblue")) +
     guides(fill = "none")
 }
-saveRDS(plot_genre, "plot_genre.rds")
+saveRDS(plot_genre, "rds_files/plot_genre.rds")
 
 # Testing function
 plot_genre("Horror", "High")
@@ -351,7 +351,7 @@ plot_budget <- function(genre, input_budget, predicted_value, data = final_movie
              label = "Your Movie", vjust = -1, color = "navyblue")
 }
 
-saveRDS(plot_budget, "plot_budget.RDS")
+saveRDS(plot_budget, "rds_files/plot_budget.RDS")
 
 # Testing function
 plot_budget("Drama", 20000000, 116018442)
@@ -392,7 +392,7 @@ ggplot(rating_data, aes(x = normal_binned, fill = normal_binned)) +
         plot.title = element_text(size = 20, face = "bold", color = "darkblue")) +
   guides(fill = "none")
 }
-saveRDS(plot_rating, "plot_rating.rds")
+saveRDS(plot_rating, "rds_files/plot_rating.rds")
 
 # Testing function
 plot_rating("R", "High")
@@ -402,7 +402,7 @@ plot_rating("R", "High")
 ``` {R Suggestion}
 # Created a new function to suggest a budget cost that would return a predicted gross revenue value that falls into the next bin. 
 
-test_data <- readRDS("test_data.rds")
+test_data <- readRDS("rds_files/test_data.rds")
 
 print(test_data)
 
@@ -443,7 +443,7 @@ budget_suggestion <- function(input_data){
 
 }
 
-saveRDS(budget_suggestion, file = "budget_suggestion.rds")
+saveRDS(budget_suggestion, file = "rds_files/budget_suggestion.rds")
 
 budget_suggestion(test_data)
 ```
@@ -451,7 +451,7 @@ budget_suggestion(test_data)
 
 ``` {R Runtime}
 
-test_data <- readRDS("test_data.rds")
+test_data <- readRDS("rds_files/test_data.rds")
 
 print(test_data)
 
@@ -494,7 +494,7 @@ runtime_suggestion <- function(input_data){
 
 }
 
-saveRDS(runtime_suggestion, file = "runtime_suggestion.rds")
+saveRDS(runtime_suggestion, file = "rds_files/runtime_suggestion.rds")
 
 runtime_suggestion(test_data)
 ```
